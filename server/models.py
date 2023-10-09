@@ -32,9 +32,10 @@ class User(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     groups = db.relationship("Group", secondary=user_group, backref="members")
-    serialize_rules = ("-groups.members",)
-    # answers = db.relationship("StandupResponse", backref="submitter")
-    # serialize_rules = ("-groups.users", "-standup_responses.user")
+    responses = db.relationship("StandupResponse", backref="submitter")
+    serialize_rules = ("-groups.members", "-responses.submitter")
+    
+    
     
     def __repr__(self):
         return f'<User: "{self.name}">'
@@ -65,7 +66,7 @@ class Meeting(db.Model, SerializerMixin):
     serialize_rules = ("-group_host.meetings","-meeting.questions")
     
     def __repr__(self):
-        return f'<Group: "{self.topic}">'
+        return f'<Meeting: "{self.topic}">'
 
 
 class StandupQuestion(db.Model, SerializerMixin):
@@ -73,28 +74,28 @@ class StandupQuestion(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    
-    # su_responses = db.relationship("StandupResponse", backref="su_question")
+    #relationships: standup_meetings | 
+    responses = db.relationship("StandupResponse", backref="question")
     serialize_rules=("-standup_meetings.standup_questions",)
 
     def __repr__(self):
         return f'<StandupQuestion: "{self.description}">'
 
 
-# class StandupResponse(db.Model, SerializerMixin):
-#     __tablename__ = "standup_responses"
+class StandupResponse(db.Model, SerializerMixin):
+    __tablename__ = "standup_responses"
 
-#     id = db.Column(db.Integer, primary_key=True)
-#     content = db.Column(db.String)
-#     created_at = db.Column(db.DateTime, server_default=db.func.now())
-#     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-#     standup_question_id = db.Column(db.Integer, db.ForeignKey("standup_questions.id"))
-    
-#     serialize_rules = ("-user.standup_responses", "-standup_questions.standup_responses")
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    standup_question_id = db.Column(db.Integer, db.ForeignKey("standup_questions.id"))
+    #relationship: question | submitter
+    serialize_rules = ("-user.standup_responses", "-standup_questions.standup_responses")
 
 
-#     def __repr__(self):
-#         return f'<StandupResponse: "{self.content} | ">'
+    def __repr__(self):
+        return f'<StandupResponse: "{self.content} | ">'
 
 
 
