@@ -1,6 +1,5 @@
 from config import db
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
 from sqlalchemy import func
@@ -20,8 +19,16 @@ user_group = db.Table(
 meeting_question = db.Table(
     "meeting_question",
     db.Column("meeting_id", db.Integer, db.ForeignKey("meetings.id")),
-    db.Column("standup_question_id", db.Integer, db.ForeignKey("standup_questions.id")),
+    db.Column("question_id", db.Integer, db.ForeignKey("questions.id")),
 )
+
+user_todo_list = db.Table(
+    "user_todo_list",
+    db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+    db.Column("todo_list_id", db.Integer, db.ForeignKey("todo_lists.id")),
+)
+
+
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
@@ -31,12 +38,14 @@ class User(db.Model, SerializerMixin):
     email = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+    
     groups = db.relationship("Group", secondary=user_group, backref="members")
-    responses = db.relationship("StandupResponse", backref="submitter")
-    serialize_rules = ("-groups.members", "-responses.submitter")
+    todo_lists = db.relationship("ToDoList", secondary=user_todo_list, backref="users")
     
     
-    
+    responses = db.relationship("Response", backref="user")
+
+    serialize_rules = ("-groups.members", "-responses.user", "-responses.groups", "-todo_lists.users")
     def __repr__(self):
         return f'<User: "{self.name}">'
     
@@ -47,9 +56,10 @@ class Group(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    meetings = db.relationship("Meeting", backref="group_host")
+    meetings = db.relationship("Meeting", backref="group")
+    serialize_rules = ("-members.groups", "-meetings.group")
+
     
-    serialize_rules = ("-members.groups", "-questions.groups")
     def __repr__(self):
         return f'<Group: "{self.name}">'
 
@@ -62,36 +72,38 @@ class Meeting(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
-    standup_questions = db.relationship("StandupQuestion", secondary=meeting_question, backref="standup_meetings")
-    serialize_rules = ("-group_host.meetings","-meeting.questions")
+    questions = db.relationship("Question", secondary=meeting_question, backref="meetings")
     
+    serialize_rules = ("-questions.meetings",)
+    
+
     def __repr__(self):
         return f'<Meeting: "{self.topic}">'
 
 
-class StandupQuestion(db.Model, SerializerMixin):
-    __tablename__ = "standup_questions"
+class Question(db.Model, SerializerMixin):
+    __tablename__ = "questions"
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    #relationships: standup_meetings | 
-    responses = db.relationship("StandupResponse", backref="question")
-    serialize_rules=("-standup_meetings.standup_questions",)
+    #relationships: meetings | 
+    responses = db.relationship("Response", backref="question")
+    serialize_rules=("-meetings.questions", "-responses.question")
 
     def __repr__(self):
         return f'<StandupQuestion: "{self.description}">'
 
 
-class StandupResponse(db.Model, SerializerMixin):
-    __tablename__ = "standup_responses"
+class Response(db.Model, SerializerMixin):
+    __tablename__ = "responses"
 
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    standup_question_id = db.Column(db.Integer, db.ForeignKey("standup_questions.id"))
-    #relationship: question | submitter
-    serialize_rules = ("-user.standup_responses", "-standup_questions.standup_responses")
+    question_id = db.Column(db.Integer, db.ForeignKey("questions.id"))
+    #relationship: question | user
+    serialize_rules = ("-user.responses", "-question.responses", "-user.groups")
 
 
     def __repr__(self):
@@ -99,55 +111,36 @@ class StandupResponse(db.Model, SerializerMixin):
 
 
 
+class ToDoList(db.Model, SerializerMixin):
+    __tablename__ = "todo_lists"
+
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    items = db.relationship("ToDo", backref="todo_list")
+   
+    serialize_rules=("-items.todo_list", "-users.todo_lists")
+
+    def __repr__(self):
+        return f'<ToDo: "{self.description} | ">'
 
 
+class ToDo(db.Model, SerializerMixin):
+    __tablename__ = "todos"
 
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String)
+    completed = db.Column(db.String)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    list_id = db.Column(db.Integer, db.ForeignKey("todo_lists.id"))
+      
 
+    serialize_rules=("-todo_list.items",)
 
-
-
-
-
-
-
-
-
-# class Assignment(db.Model, SerializerMixin):
-#     __tablename__ = "assignments"
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String)
-#     description = db.Column(db.String)
-#     completed = db.Column(db.String)
-#     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    def __repr__(self):
+        return f'<ToDo: "{self.description} | ">'
     
-#     def __repr__(self):
-#         return f'<Assignment: "{self.name} | ">'
 
-
-# class Task(db.Model, SerializerMixin):
-#     __tablename__ = "tasks"
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     description = db.Column(db.String)
-#     status = db.Column(db.String)
-#     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    
-#     def __repr__(self):
-#         return f'<Task: "{self.description} | ">'
-
-
-# class ToDo(db.Model, SerializerMixin):
-#     __tablename__ = "toDos"
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     description = db.Column(db.String)
-#     status = db.Column(db.String)
-#     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    
-#     def __repr__(self):
-#         return f'<ToDo: "{self.description} | ">'
-    
 
 # class DiscussionQuestion(db.Model, SerializerMixin):
 #     __tablename__ = "discussion_questions"
@@ -173,3 +166,40 @@ class StandupResponse(db.Model, SerializerMixin):
 
 
 
+# class Task(db.Model, SerializerMixin):
+#     __tablename__ = "tasks"
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     description = db.Column(db.String)
+#     completed = db.Column(db.String)
+#     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    
+#     def __repr__(self):
+#         return f'<Task: "{self.description} | ">'
+
+
+
+
+
+# class Assignment(db.Model, SerializerMixin):
+#     __tablename__ = "assignments"
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String)
+#     description = db.Column(db.String)
+#     status = db.Column(db.String)
+#     created_at = db.Column(db.DateTime, server_default=db.func.now())
+#     # relationship: users |
+#     users = db.relationship("User", secondary=user_assignment, backref="assignments")
+    
+#     serialize_rules = ("-users.assignments",)
+    
+#     def __repr__(self):
+#         return f'<Assignment: "{self.name} | ">'
+
+
+# user_assignment = db.Table(
+#     "user_assignment",
+#     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
+#     db.Column("assignment_id", db.Integer, db.ForeignKey("assignments.id")),
+# )

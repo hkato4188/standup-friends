@@ -15,12 +15,11 @@ fake = Faker()
 
 
 def create_users():
-    u1 = User(email="breellejordyn@gmail.com", name="BreElle Wells")
-    u2 = User(email="hirokikato1@gmail.com", name="Hiro Kato")
-    db.session.add_all([u1,u2])
-    db.session.commit()
+    # u1 = User(email="breellejordyn@gmail.com", name="BreElle Wells")
+    # u2 = User(email="hirokikato1@gmail.com", name="Hiro Kato")
 
-    users = [u1, u2]
+    # users = [u1, u2]
+    users = []
 
     name_list = []
     for _ in range(50):
@@ -58,25 +57,46 @@ def create_meetings():
 
 def create_standup_questions():
     questions = []
-    for n in range(25):
-        sq = StandupQuestion(
+    for _ in range(25):
+        sq = Question(
             description=fake.text(),
         )
         questions.append(sq)
     return questions
 
 
-# def create_standup_responses():
-#     questions = []
-#     for n in range(20):
-#         sq = StandupQuestion(
-#             description=fake.text(),
-#             user_id=rc([user.id for user in users]),
-#             post_id=rc([post.id for post in posts]),
-#         )
-#         questions.append(sq)
+def create_standup_responses():
+    responses = []
+    for _ in range(0,25):
+        res = Response(
+            content=fake.text(),
+        )
+        responses.append(res)
 
-#     return questions
+    return responses
+
+def create_todos():
+    td = []
+    status = ["True", "False"]
+    for _ in range(75):
+        t = ToDo(
+            description=fake.text(),
+            completed = rc(status),
+        )
+        td.append(t)
+
+    return td
+
+def create_todo_lists():
+    tdl = []
+    for n in range(30):
+        t = ToDoList(
+            description= f"List {n} items:"
+        )
+        tdl.append(t)
+
+    return tdl
+
 
 
 if __name__ == "__main__":
@@ -121,34 +141,100 @@ if __name__ == "__main__":
 
         print("Adding meetings to groups...")
         meetings = Meeting.query.all()
-        groups = Group.query.all()
         for n in range(0,15):
-            meetings[n].group_host = groups[n]
+            meetings[n].group = groups[n]
             print(f"added meeting:{n} to group:{n}")
         db.session.commit()
         print("-----------------")
 
         print("Seeding standup_questions...")
-        standup_questions = create_standup_questions()
-        db.session.add_all(standup_questions)
+        questions = create_standup_questions()
+        db.session.add_all(questions)
         db.session.commit()
         print("-----------------")
 
         print("Adding standup questions to meeting agendas...")
-        meetings = Meeting.query.all()
-        standup_questions = StandupQuestion.query.all()
+        standup_questions = Question.query.all()
         for n in range(0,15):
-            meetings[n].standup_questions.append(standup_questions[n])
+            meetings[n].questions.append(standup_questions[n])
             print(f"added meeting:{n} to group:{n}")
         db.session.commit()
         print("-----------------")
 
 
-#         print("Seeding standup_answers...")
-#         standup_answers = create_standup_answers()
-#         db.session.add_all(standup_answers)
-#         db.session.commit()
-#         print("-----------------")
+        print("Seeding standup_responses...")
+        responses = create_standup_responses()
+        db.session.add_all(responses)
+        db.session.commit()
+        print("-----------------")
         
 
+        print("Adding standup responses to standup questions...")
+        for su_response in responses:
+            su_response.user_id = rc([user.id for user in users])
+            su_response.question_id = rc([question.id for question in questions])
+        db.session.commit()
+        print("-----------------")
+
+        print("Seeding user todos...")
+        td = create_todos()
+        db.session.add_all(td)
+        db.session.commit()
+        print("-----------------")
+        
+        print("Seeding user todo lists...")
+        tdl = create_todo_lists()
+        db.session.add_all(tdl)
+        db.session.commit()
+        print("-----------------")
+        
+
+        print("Adding todo items to their respective lists...")
+        tdlists = ToDoList.query.all()
+        for t in ToDo.query.all():
+            t.list_id = rc([tdl.id for tdl in tdlists])
+        db.session.commit()
+        print("-----------------")
+
+        
+        print("Adding todo lists to users...")
+        
+        for tdl in tdlists:
+            tdl.users.append(rc([user for user in users]))
+        db.session.commit()
+        print("-----------------")
+        
+        
+        
         print("Done seeding!")
+
+
+
+
+# def create_assignments():
+#     assignments = []
+#     status = ["Pending", "Not Started", "Complete"]
+#     for n in range(5):
+#         assignment = Assignment(
+#             name = f"Assignment: {n+1}",
+#             description=fake.text(),
+#             status = rc(status),
+#         )
+#         assignments.append(assignment)
+#     return assignments
+
+
+        # print("Seeding user assignments...")
+        # assignments = create_assignments()
+        # db.session.add_all(assignments)
+        # db.session.commit()
+        # print("-----------------")
+
+        # print("Adding users to assignments...")
+        # assignments = Assignment.query.all()
+        # for user in users:
+        #     random_assignment = rc(assignments)
+        #     if not user in random_assignment.users:
+        #         random_assignment.users.append(user)
+        # db.session.commit()
+        # print("-----------------")
