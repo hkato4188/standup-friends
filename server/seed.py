@@ -14,6 +14,7 @@ fake = Faker()
 
 
 
+
 def create_users():
     # u1 = User(email="breellejordyn@gmail.com", name="BreElle Wells")
     # u2 = User(email="hirokikato1@gmail.com", name="Hiro Kato")
@@ -49,7 +50,7 @@ def create_meetings():
     meetings = []
     for n in range(25):
        m = Meeting(
-            topic=f"Meeting: {n+1}",
+            topic=f"Meeting: {n+1}"
         )
        meetings.append(m)
 
@@ -97,6 +98,26 @@ def create_todo_lists():
 
     return tdl
 
+def create_discussion_topics():
+    dq_topics = []
+    for n in range(20):
+        dq = DiscussionTopic(
+            content=f"What do you think of the number: {n}?",
+            rating= randint(1,5)
+        )
+        dq_topics.append(dq)
+    return dq_topics
+
+def create_discussion_responses():
+    dq_responses = []
+    for n in range(20):
+        dqr = DiscussionResponse(
+            content=f"What do you think of the number: {n}?"
+            
+        )
+        dq_responses.append(dqr)
+    return dq_responses
+
 
 
 if __name__ == "__main__":
@@ -141,7 +162,7 @@ if __name__ == "__main__":
 
         print("Adding meetings to groups...")
         meetings = Meeting.query.all()
-        for n in range(0,15):
+        for n in range(0,25):
             meetings[n].group = groups[n]
             print(f"added meeting:{n} to group:{n}")
         db.session.commit()
@@ -155,9 +176,9 @@ if __name__ == "__main__":
 
         print("Adding standup questions to meeting agendas...")
         standup_questions = Question.query.all()
-        for n in range(0,15):
+        for n in range(0,25):
             meetings[n].questions.append(standup_questions[n])
-            print(f"added meeting:{n} to group:{n}")
+            print(f"added meeting:{n} to meeting:{n}")
         db.session.commit()
         print("-----------------")
 
@@ -203,38 +224,30 @@ if __name__ == "__main__":
             tdl.users.append(rc([user for user in users]))
         db.session.commit()
         print("-----------------")
+
+        print("Seeding discussion topics...")
+        topics = create_discussion_topics()
+        db.session.add_all(topics)
+        db.session.commit()
+        print("-----------------")
+
+        print("Seeding discussion responses...")
+        dq_res = create_discussion_responses()
+        db.session.add_all(dq_res)
+        db.session.commit()
+        print("-----------------")
         
-        
-        
+        print("Adding discussion responses to discussion topics...")
+        dq_responses = DiscussionResponse.query.all()
+        dq_topics = DiscussionTopic.query.all()
+
+        for dqr in dq_responses:
+            dqr.user_id = rc([user.id for user in users])
+            dqr.discussion_topic_id = rc([topic.id for topic in dq_topics])
+        db.session.commit()
+        print("-----------------")
+
         print("Done seeding!")
 
 
 
-
-# def create_assignments():
-#     assignments = []
-#     status = ["Pending", "Not Started", "Complete"]
-#     for n in range(5):
-#         assignment = Assignment(
-#             name = f"Assignment: {n+1}",
-#             description=fake.text(),
-#             status = rc(status),
-#         )
-#         assignments.append(assignment)
-#     return assignments
-
-
-        # print("Seeding user assignments...")
-        # assignments = create_assignments()
-        # db.session.add_all(assignments)
-        # db.session.commit()
-        # print("-----------------")
-
-        # print("Adding users to assignments...")
-        # assignments = Assignment.query.all()
-        # for user in users:
-        #     random_assignment = rc(assignments)
-        #     if not user in random_assignment.users:
-        #         random_assignment.users.append(user)
-        # db.session.commit()
-        # print("-----------------")

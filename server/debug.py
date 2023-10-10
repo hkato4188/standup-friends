@@ -15,7 +15,8 @@ if __name__ == '__main__':
         responses = Response.query.all()
         todos = ToDo.query.all()
         todo_lists = ToDoList.query.all()
-
+        discussion_topics = DiscussionTopic.query.all()
+        discussion_responses = DiscussionResponse.query.all()
 
 
         u1 = users[0]
@@ -53,7 +54,16 @@ if __name__ == '__main__':
         list3 = todo_lists[2]
         list4 = todo_lists[3]
         list5 = todo_lists[4]
-
-
+        dt1 = discussion_topics[0]
+        dt2 = discussion_topics[1]
+        dt3 = discussion_topics[2]
+        dt4 = discussion_topics[3]
+        dt5 = discussion_topics[4]
+        dr1 = discussion_responses[0]
+        dr2 = discussion_responses[1]
+        dr3 = discussion_responses[2]
+        dr4 = discussion_responses[3]
+        dr5 = discussion_responses[4]
+        
         ipdb.set_trace()
         pass
