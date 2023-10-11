@@ -336,21 +336,6 @@ class ToDoLists_By_Id(Resource):
         else:
             return make_response({"error": "List not found"}, 404)
 
-
-api.add_resource(Groups, "/groups")
-api.add_resource(Groups_By_Id, "/groups/<int:id>")
-api.add_resource(Meetings, "/meetings")
-api.add_resource(Meetings_By_Id, "/meetings/<int:id>")
-api.add_resource(Questions, "/questions")
-api.add_resource(Questions_By_Id, "/questions/<int:id>")
-api.add_resource(Responses, "/responses")
-api.add_resource(Responses_By_Id, "/responses/<int:id>")
-api.add_resource(ToDoLists, "/todolists")
-api.add_resource(ToDoLists_By_Id, "/todolists/<int:id>")
-
-
-
-
 class ToDos(Resource):
     def get(self):
         tds = ToDo.query.all()
@@ -374,71 +359,257 @@ class ToDos(Resource):
             new_td.clear_validation_errors()
             return make_response({"errors": errors},422)
         
-# class ToDos_By_Id(Resource):
-#     def get(self, id):
-#          = ToDo.query.filter(ToDo.id == id).first()
-        
-#         if :
-#             _dict = .to_dict()
-#             return make_response(_dict, 200)
-#         else:
-#             return make_response({"error": " not found."},404)
+class ToDos_By_Id(Resource):
+    def get(self, id):
+        td = ToDo.query.filter(ToDo.id == id).first()
+        if td:
+            td_dict = td.to_dict()
+            return make_response(td_dict, 200)
+        else:
+            return make_response({"error": " not found."},404)
 
-#     def patch(self,id):
-#          = ToDo.query.filter(ToDo.id == id).first()
-#         if :
-#             try:
-#                 data = request.get_json()
-#                 for attr in data:
-#                     setattr(, attr, data[attr]) 
-#                 if .validation_errors:
-#                     raise Exception(.validation_errors)
-#                 db.session.add()
-#                 db.session.commit()
-#                 _dict = .to_dict()
-#                 return make_response(_dict, 202)
-#             except:
-#                 errors = .validation_errors
-#                 .clear_validation_errors()
-#                 return make_response({"error": errors}, 422)
-#         else:
-#             return make_response({"error": " not found."},404)
+    def patch(self,id):
+        td = ToDo.query.filter(ToDo.id == id).first()
+        if td:
+            try:
+                data = request.get_json()
+                for attr in data:
+                    setattr(td, attr, data[attr]) 
+                if td.validation_errors:
+                    errors = td.validation_errors
+                    td.clear_validation_errors()
+                    raise Exception(errors)
+                db.session.add(td)
+                db.session.commit()
+                td_dict = td.to_dict()
+                return make_response(td_dict, 202)
+            except:
+                errors = td.validation_errors
+                td.clear_validation_errors()
+                return make_response({"error": errors}, 422)
+        else:
+            return make_response({"error": " not found."},404)
     
-#     def delete(self, id):
-#          = ToDo.query.filter(Response.id == id).first()
-#         if :
-#             db.session.delete()
-#             db.session.commit()
-#             return make_response({}, 204)
-#         else:
-#             return make_response({"error": " not found"}, 404)
+    def delete(self, id):
+        td = ToDo.query.filter(ToDo.id == id).first()
+        if td:
+            db.session.delete(td)
+            db.session.commit()
+            return make_response({}, 204)
+        else:
+            return make_response({"error": "ToDo item not found"}, 404)
+
+class DiscussionTopics(Resource):
+    def get(self):
+        dts = DiscussionTopic.query.all()
+        dt_dict = [dt.to_dict() for dt in dts]
+        return make_response(dt_dict, 200)
+    
+    def post(Resource):
+        data = request.get_json()
+        new_dt = DiscussionTopic(content=data["content"], rating=data["rating"])
+        if new_dt.validation_errors:
+                errors = new_dt.validation_errors
+                new_dt.clear_validation_errors()
+                raise Exception(errors)
+        try:  
+            db.session.add(new_dt)
+            db.session.commit()
+            discussion_topic_dict = new_dt.to_dict()
+            return make_response(discussion_topic_dict, 201)
+        except:
+            errors = new_dt.validation_errors
+            new_dt.clear_validation_errors()
+            return make_response({"errors": errors},422)
+        
+class DiscussionTopics_By_Id(Resource):
+    def get(self, id):
+        dt = DiscussionTopic.query.filter(DiscussionTopic.id == id).first()
+        if dt:
+            dt_dict = dt.to_dict()
+            return make_response(dt_dict, 200)
+        else:
+            return make_response({"error": "Discussion topic not found."},404)
+
+    def patch(self,id):
+        dt = DiscussionTopic.query.filter(DiscussionTopic.id == id).first()
+        if dt:
+            try:
+                data = request.get_json()
+                for attr in data:
+                    setattr(dt, attr, data[attr]) 
+                if dt.validation_errors:
+                    errors = dt.validation_errors
+                    dt.clear_validation_errors()
+                    raise Exception(errors)
+                db.session.add(dt)
+                db.session.commit()
+                dt_dict = dt.to_dict()
+                return make_response(dt_dict, 202)
+            except:
+                errors = dt.validation_errors
+                dt.clear_validation_errors()
+                return make_response({"error": errors}, 422)
+        else:
+            return make_response({"error": "Discussion topic not found."},404)
+    
+    def delete(self, id):
+        dt = DiscussionTopic.query.filter(DiscussionTopic.id == id).first()
+        if dt:
+            db.session.delete(dt)
+            db.session.commit()
+            return make_response({}, 204)
+        else:
+            return make_response({"error": "Discussion topic item not found"}, 404)
+
+class DiscussionResponses(Resource):
+    def get(self):
+        drs = DiscussionTopic.query.all()
+        dr_dict = [dr.to_dict() for dr in drs]
+        return make_response(dr_dict, 200)
+    
+    def post(Resource):
+        data = request.get_json()
+        new_dr = DiscussionResponse(content=data["content"], user_id=data["user_id"], discussion_topic_id=data["discussion_topic_id"])
+        if new_dr.validation_errors:
+                errors = new_dr.validation_errors
+                new_dr.clear_validation_errors()
+                raise Exception(errors)
+        try:  
+            db.session.add(new_dr)
+            db.session.commit()
+            discussion_response_dict = new_dr.to_dict()
+            return make_response(discussion_response_dict, 201)
+        except:
+            errors = new_dr.validation_errors
+            new_dr.clear_validation_errors()
+            return make_response({"errors": errors},422)
+        
+class DiscussionResponses_By_Id(Resource):
+    def get(self, id):
+        dr = DiscussionResponse.query.filter(DiscussionResponse.id == id).first()
+        if dr:
+            dr_dict = dr.to_dict()
+            return make_response(dr_dict, 200)
+        else:
+            return make_response({"error": "Discussion response not found."},404)
+
+    def patch(self,id):
+        dr = DiscussionResponse.query.filter(DiscussionResponse.id == id).first()
+        if dr:
+            try:
+                data = request.get_json()
+                for attr in data:
+                    setattr(dr, attr, data[attr]) 
+                if dr.validation_errors:
+                    errors = dr.validation_errors
+                    dr.clear_validation_errors()
+                    raise Exception(errors)
+                db.session.add(dr)
+                db.session.commit()
+                dr_dict = dr.to_dict()
+                return make_response(dr_dict, 202)
+            except:
+                errors = dr.validation_errors
+                dr.clear_validation_errors()
+                return make_response({"error": errors}, 422)
+        else:
+            return make_response({"error": "Discussion response not found."},404)
+    
+    def delete(self, id):
+        dr = DiscussionResponse.query.filter(DiscussionResponse.id == id).first()
+        if dr:
+            db.session.delete(dr)
+            db.session.commit()
+            return make_response({}, 204)
+        else:
+            return make_response({"error": "Discussion response item not found"}, 404)
 
 
+
+class Users(Resource):
+    def get(self):
+        users = User.query.all()
+        users_dict = [user.to_dict() for user in users]
+        return make_response(users_dict, 200)
+    
+    def post(Resource):
+        data = request.get_json()
+        try:
+            new_user = User(name=data["name"], email=data["email"])
+            if new_user.validation_errors:
+              errors = new_user.validation_errors
+              new_user.clear_validation_errors()                
+              raise Exception(errors)
+            else: 
+                db.session.add(new_user)
+                db.session.commit()
+                user_dict = new_user.to_dict()
+                return make_response(user_dict, 201)
+        except:
+            errors = new_user.validation_errors
+            new_user.clear_validation_errors()
+            return make_response({"errors": errors},422)
+        
+class Users_By_Id(Resource):
+    def get(self,id):
+        user = User.query.filter(User.id == id).first()
+        if user:
+            user_dict = user.to_dict()
+            return make_response(user_dict, 200)
+        else:
+            return make_response({"error": "User not found."},404)
+
+    def patch(self,id):
+        user = User.query.filter(User.id == id).first()
+        if user:
+            try:
+                data = request.get_json()
+                for attr in data:
+                    setattr(user, attr, data[attr]) 
+                if user.validation_errors:
+                    errors = user.validation_errors
+                    user.clear_validation_errors()
+                    raise Exception(errors)
+                db.session.add(user)
+                db.session.commit()
+                user_dict = user.to_dict()
+                return make_response(user_dict, 202)
+            except:
+                errors = user.validation_errors
+                user.clear_validation_errors()
+                return make_response({"error": errors}, 422)
+        else:
+            return make_response({"error": "User not found."},404)
+    
+    def delete(self, id):
+        user = User.query.filter(User.id == id).first()
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return make_response({}, 204)
+        else:
+            return make_response({"error": "User not found"}, 404)
+
+
+api.add_resource(Groups, "/groups")
+api.add_resource(Groups_By_Id, "/groups/<int:id>")
+api.add_resource(Meetings, "/meetings")
+api.add_resource(Meetings_By_Id, "/meetings/<int:id>")
+api.add_resource(Questions, "/questions")
+api.add_resource(Questions_By_Id, "/questions/<int:id>")
+api.add_resource(Responses, "/responses")
+api.add_resource(Responses_By_Id, "/responses/<int:id>")
+api.add_resource(ToDoLists, "/todolists")
+api.add_resource(ToDoLists_By_Id, "/todolists/<int:id>")
 api.add_resource(ToDos, "/todos")
-# api.add_resource(ToDos_By_Id, "/todos/<int:id>")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+api.add_resource(ToDos_By_Id, "/todos/<int:id>")
+api.add_resource(DiscussionTopics, "/discussion_topics")
+api.add_resource(DiscussionTopics_By_Id, "/discussion_topics/<int:id>")
+api.add_resource(DiscussionResponses, "/discussion_responses")
+api.add_resource(DiscussionResponses_By_Id, "/discussion_responses/<int:id>")
+api.add_resource(Users, "/users")
+api.add_resource(Users_By_Id, "/users/<int:id>")
 
 
 
