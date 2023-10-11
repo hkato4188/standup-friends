@@ -42,7 +42,7 @@ class Groups(Resource):
         
 class Groups_By_Id(Resource):
     def get(self,id):
-        group = Group.query.get(id)
+        group = Group.query.filter(Group.id == id).first()
         if group:
             group_dict = group.to_dict()
             return make_response(group_dict, 200)
@@ -50,7 +50,7 @@ class Groups_By_Id(Resource):
             return make_response({"error": "Group not found."},404)
 
     def patch(self,id):
-        group = Group.query.get(id)
+        group = Group.query.filter(Group.id == id).first()
         if group:
             try:
                 data = request.get_json()
@@ -70,36 +70,13 @@ class Groups_By_Id(Resource):
             return make_response({"error": "Group not found."},404)
     
     def delete(self, id):
-        group = Group.query.get(id)
+        group = Group.query.filter(Group.id == id).first()
         if group:
             db.session.delete(group)
             db.session.commit()
             return make_response({}, 204)
         else:
             return make_response({"error": "Group not found"}, 404)
-
-api.add_resource(Groups, "/groups")
-api.add_resource(Groups_By_Id, "/groups/<int:id>")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class Meetings(Resource):
@@ -125,7 +102,7 @@ class Meetings(Resource):
         
 class Meetings_By_Id(Resource):
     def get(self,id):
-        meeting = Meeting.query.get(id)
+        meeting = Meeting.query.filter(Meeting.id == id).first()
         if meeting:
             meeting_dict = meeting.to_dict()
             return make_response(meeting_dict, 200)
@@ -153,7 +130,7 @@ class Meetings_By_Id(Resource):
             return make_response({"error": "Meeting not found."},404)
     
     def delete(self, id):
-        meeting = Meeting.query.get(id)
+        meeting = Meeting.query.filter(Meeting.id == id).first()
         if meeting:
             db.session.delete(meeting)
             db.session.commit()
@@ -161,6 +138,11 @@ class Meetings_By_Id(Resource):
         else:
             return make_response({"error": "Meeting not found"}, 404)
 
+
+
+
+api.add_resource(Groups, "/groups")
+api.add_resource(Groups_By_Id, "/groups/<int:id>")
 api.add_resource(Meetings, "/meetings")
 api.add_resource(Meetings_By_Id, "/meetings/<int:id>")
 
@@ -170,7 +152,68 @@ api.add_resource(Meetings_By_Id, "/meetings/<int:id>")
 
 
 
+class Questions(Resource):
+    def get(self):
+        questions = Question.query.all()
+        questions_dict = [question.to_dict() for question in questions]
+        return make_response(questions_dict, 200)
+    
+    def post(Resource):
+        data = request.get_json()
+        new_question = Question(description=data["description"])
+        if new_question.validation_errors:
+                raise ValueError 
+        try:  
+            db.session.add(new_question)
+            db.session.commit()
+            question_dict = new_question.to_dict()
+            return make_response(question_dict, 201)
+        except:
+            errors = new_question.validation_errors
+            new_question.clear_validation_errors()
+            return make_response({"errors": errors},422)
+        
+class Questions_By_Id(Resource):
+    def get(self, id):
+        question = Question.query.filter(Question.id == id).first()
+        if question:
+            question_dict = question.to_dict()
+            return make_response(question_dict, 200)
+        else:
+            return make_response({"error": "Question not found."},404)
 
+    def patch(self,id):
+        question = Question.query.filter(Question.id == id).first()
+        if question:
+            try:
+                data = request.get_json()
+                for attr in data:
+                    setattr(question, attr, data[attr]) 
+                if question.validation_errors:
+                    raise ValueError
+                db.session.add(question)
+                db.session.commit()
+                question_dict = question.to_dict()
+                return make_response(question_dict, 202)
+            except:
+                errors = question.validation_errors
+                question.clear_validation_errors()
+                return make_response({"error": errors}, 422)
+        else:
+            return make_response({"error": "Question not found."},404)
+    
+    def delete(self, id):
+        question = Question.query.filter(Question.id == id).first()
+        if question:
+            db.session.delete(question)
+            db.session.commit()
+            return make_response({}, 204)
+        else:
+            return make_response({"error": "Question not found"}, 404)
+
+
+api.add_resource(Questions, "/questions")
+api.add_resource(Questions_By_Id, "/questions/<int:id>")
 
 
 
