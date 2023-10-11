@@ -68,9 +68,10 @@ def create_standup_questions():
 
 def create_standup_responses():
     responses = []
-    for _ in range(0,25):
+    for _ in range(25):
+        res_text = fake.texts(nb_texts=1, max_nb_chars=500)[0]
         res = Response(
-            content=fake.text(),
+            content= res_text
         )
         responses.append(res)
 

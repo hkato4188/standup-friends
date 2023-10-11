@@ -166,7 +166,6 @@ class Question(db.Model, SerializerMixin):
             self.validation_errors.append('Please provide a more detailed question description.')
     
 
-
 class Response(db.Model, SerializerMixin):
     __tablename__ = "responses"
 
