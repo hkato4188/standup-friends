@@ -21,7 +21,7 @@ def index():
 class Groups(Resource):
     def get(self):
         groups = Group.query.all()
-        groups_dict = [group.to_dict() for group in groups]
+        groups_dict = [group.to_dict(only=("id","name","meetings.id","meetings.topic","members.id","members.name")) for group in groups]
         return make_response(groups_dict, 200)
     
     def post(Resource):
