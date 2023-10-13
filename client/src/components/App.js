@@ -2,7 +2,8 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 // import ErrorPage from "./ErrorPage";
 import GroupsPage from "./groupComponents/GroupsPage";
-import ToDoListsPage from "./listComponents/ToDoListsPage";
+import ToDosPage from "./toDoComponents/ToDosPage";
+import ToDoListDetail from "./toDoComponents/ToDoListDetail";
 
 function App() {
   return (
@@ -11,8 +12,11 @@ function App() {
         <Route exact path="/groups">
           <GroupsPage />
         </Route>
-        <Route exact path="/todo_lists">
-          <ToDoListsPage />
+        <Route exact path="/todos">
+          <ToDosPage />
+        </Route>
+        <Route exact path="/todo_lists/:id">
+          <ToDoListDetail />
         </Route>
       </Switch>
     </>

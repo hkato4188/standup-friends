@@ -275,7 +275,7 @@ class Responses_By_Id(Resource):
 class ToDoLists(Resource):
     def get(self):
         tdlists = ToDoList.query.all()
-        lists_dict = [list.to_dict() for list in tdlists]
+        lists_dict = [list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "items")) for list in tdlists]
         return make_response(lists_dict, 200)
     
     def post(Resource):
@@ -288,7 +288,7 @@ class ToDoLists(Resource):
         try:  
             db.session.add(new_list)
             db.session.commit()
-            list_dict = new_list.to_dict()
+            list_dict = new_list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "items"))
             return make_response(list_dict, 201)
         except:
             errors = new_list.validation_errors
@@ -297,11 +297,11 @@ class ToDoLists(Resource):
         
 class ToDoLists_By_Id(Resource):
     def get(self, id):
-        list = ToDoList.query.filter(ToDoList.id == id).first()
+        tdl = ToDo.query.filter(ToDo.list_id == id).all()
         
-        if list:
-            list_dict = list.to_dict()
-            return make_response(list_dict, 200)
+        if tdl:
+            td_dict = [todo.to_dict(only=("id","description","completed","todo_list")) for todo in tdl]
+            return make_response(td_dict, 200)
         else:
             return make_response({"error": "List not found."},404)
 
@@ -339,7 +339,7 @@ class ToDoLists_By_Id(Resource):
 class ToDos(Resource):
     def get(self):
         tds = ToDo.query.all()
-        td_dict = [td.to_dict() for td in tds]
+        td_dict = [td.to_dict(only=("id","description","completed","todo_list")) for td in tds]
         return make_response(td_dict, 200)
     
     def post(Resource):
@@ -352,7 +352,7 @@ class ToDos(Resource):
         try:  
             db.session.add(new_td)
             db.session.commit()
-            todo_dict = new_td.to_dict()
+            todo_dict = new_td.to_dict(only=("id","description","completed","todo_list"))
             return make_response(todo_dict, 201)
         except:
             errors = new_td.validation_errors

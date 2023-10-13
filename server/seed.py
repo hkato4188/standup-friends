@@ -93,7 +93,7 @@ def create_todo_lists():
     tdl = []
     for n in range(30):
         t = ToDoList(
-            description= f"List {n} items:"
+            description= f"List {n}:"
         )
         tdl.append(t)
 
@@ -214,6 +214,7 @@ if __name__ == "__main__":
         print("Adding todo items to their respective lists...")
         tdlists = ToDoList.query.all()
         for t in ToDo.query.all():
+            t.list_id = rc([tdl.id for tdl in tdlists])
             t.list_id = rc([tdl.id for tdl in tdlists])
         db.session.commit()
         print("-----------------")
