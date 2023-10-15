@@ -30,7 +30,8 @@ def create_users():
         name_list.append(name)
         u = User(
             name=name,
-            email=fake.email()
+            email=fake.email(),
+            _password_hash="abcd1234"
         )
         users.append(u)
     return users

@@ -1,4 +1,4 @@
-from config import db
+from config import db, bcrypt
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
@@ -34,7 +34,7 @@ class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, nullable=False)
     email = db.Column(db.String)
     groups = db.relationship("Group", secondary=user_group, backref="members")
     todo_lists = db.relationship("ToDoList", secondary=user_todo_list, backref="users")
@@ -42,9 +42,31 @@ class User(db.Model, SerializerMixin):
     discussion_responses = db.relationship("DiscussionResponse", backref="submitter")
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
-    
+        # ✅ Add a column _password_hash
+    _password_hash = db.Column( db.String, nullable = False )
     serialize_rules = ("-groups.members", "-responses.user", "-todo_lists.users", "-discussion_responses.submitter")
     
+    # ✅ Create a hybrid_property that will protect the hash from being viewed
+    @hybrid_property
+    def password_hash ( self ) :
+        return self._password_hash
+
+     # ✅ Create a setter method called password_hash that takes self and a password.
+        # Use bcyrpt to generate the password hash with bcrypt.generate_password_hash
+        # Set the _password_hash to the hashed password
+    @password_hash.setter
+    def password_hash ( self, password ) :
+        if type( password ) is str and len( password ) in range( 6, 17 ) :
+            password_hash = bcrypt.generate_password_hash( password.encode( 'utf-8' ) )
+            self._password_hash = password_hash.decode( 'utf-8' )
+        else :
+            self.validation_errors.append( "Password must be between 6-16 characters long." )
+
+    # ✅ Create an authenticate method that uses bcyrpt to verify the password against the hash in the DB with bcrypt.check_password_hash 
+    def authenticate ( self, password ) :
+        from app import bcrypt
+        return bcrypt.check_password_hash( self._password_hash, password.encode( 'utf-8' ) )
+
     def __repr__(self):
         return f'<User: "{self.name}">'
 
@@ -54,12 +76,17 @@ class User(db.Model, SerializerMixin):
     def clear_validation_errors(cls):
         cls.validation_errors = []
     
-    @validates('name')
-    def validate_name(self, db_column, name):
-        if isinstance(name, str) and name:
-            return name
-        else:
-            self.validation_errors.append('Name must be a string and be at least one character long.')
+
+    @validates( 'name' )
+    def validate_username ( self, db_column, username ) :
+        if type( username ) is str and username :
+            user = User.query.filter( User.name.like( f'{ username }' ) ).first()
+            if user :
+                self.validation_errors.append( 'Username already exists.' )
+            else :
+                return username
+        else :
+            self.validation_errors.append( 'Username cannot be blank.' )
 
     @validates("email")
     def validate_email(self, db_column, email):

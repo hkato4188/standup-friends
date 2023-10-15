@@ -3,11 +3,11 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, jsonify, make_response, session
+from flask import request, make_response, session
 from flask_restful import Resource
 
 # Local imports
-from config import app, db, api
+from config import app, db, api, NotFound, Unauthorized
 # Add your model imports
 from models import *
 
@@ -545,6 +545,7 @@ class Users(Resource):
             else: 
                 db.session.add(new_user)
                 db.session.commit()
+                session['user_id'] = new_user.id
                 user_dict = new_user.to_dict()
                 return make_response(user_dict, 201)
         except:
