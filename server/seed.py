@@ -79,7 +79,7 @@ def create_standup_responses():
 
 def create_todos():
     td = []
-    status = ["True", "False"]
+    status = [True, False]
     for _ in range(75):
         t = ToDo(
             description=fake.text(),

@@ -342,9 +342,10 @@ class ToDos(Resource):
         td_dict = [td.to_dict(only=("id","description","completed","todo_list")) for td in tds]
         return make_response(td_dict, 200)
     
-    def post(Resource):
+    def post(self):
         data = request.get_json()
         new_td = ToDo(description=data["description"], completed="False", list_id=data["list_id"])
+        print(f"new td {new_td.completed}")
         if new_td.validation_errors:
                 errors = new_td.validation_errors
                 new_td.clear_validation_errors()

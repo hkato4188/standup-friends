@@ -242,7 +242,7 @@ class ToDo(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String)
-    completed = db.Column(db.String)
+    completed = db.Column(db.Boolean)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     list_id = db.Column(db.Integer, db.ForeignKey("todo_lists.id"))
       
@@ -266,8 +266,7 @@ class ToDo(db.Model, SerializerMixin):
 
     @validates('completed')
     def validate_completed(self, db_column, completed):
-        status = ["true", "false"]
-        if isinstance(completed, str) and completed.lower() in status:
+        if isinstance(completed, bool):
             return completed
         else:
             self.validation_errors.append('Please enter True or False for the status of your todo item.')
