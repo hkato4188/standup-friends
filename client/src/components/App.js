@@ -4,18 +4,21 @@ import { Switch, Route } from "react-router-dom";
 import GroupsPage from "./groupComponents/GroupsPage";
 import ToDosPage from "./toDoComponents/ToDosPage";
 import ToDoListDetail from "./toDoComponents/ToDoListDetail";
-
+import Header from "./Header";
+import NavBar from "./NavBar";
 function App() {
   return (
     <>
+      <Header />
+      <NavBar />
       <Switch>
         <Route exact path="/groups">
           <GroupsPage />
         </Route>
-        <Route exact path="/todos">
+        <Route exact path="/todolists">
           <ToDosPage />
         </Route>
-        <Route exact path="/todo_lists/:id">
+        <Route exact path="/todolists/:id">
           <ToDoListDetail />
         </Route>
       </Switch>

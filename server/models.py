@@ -216,7 +216,7 @@ class ToDoList(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-    items = db.relationship("ToDo", backref="todo_list")
+    items = db.relationship("ToDo", backref="todo_list", cascade="all, delete")
    
     serialize_rules=("-items.todo_list", "-users.todo_lists")
 

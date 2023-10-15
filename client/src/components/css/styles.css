@@ -15,3 +15,69 @@
   border: 2px solid #000;
   border-radius: 5px;
 }
+
+/* ********************** Header and NavBar ******************** */
+
+.header-title {
+  flex-wrap: wrap;
+  background-color: #1c658c;
+  color: white;
+  font-family: "Lato";
+  font-size: 60px;
+  text-align: center;
+  font-weight: 800;
+  line-height: 120px;
+  letter-spacing: 1px;
+}
+
+.nav-container {
+  background: #eef2e6;
+  font-family: "Lato";
+  color: #7fbcd2;
+  padding: 3% 5% 3% 11%;
+  display: flex;
+}
+
+.nav-text {
+  font-weight: 300;
+  font-size: 16px;
+  font-weight: 250;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.nav-btn {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flexbox;
+  flex-direction: row;
+  width: 80px;
+  position: relative;
+  background: #548ca8;
+  padding: 20px 50px;
+  margin: 0 auto;
+  box-shadow: 0 7px #1c6758;
+  border-radius: 20px;
+}
+
+.nav-btn:hover {
+  box-shadow: 0 4px #1c6758;
+  top: 2px;
+}
+
+.nav-btn:active {
+  box-shadow: 0 0 #1c6758;
+  top: 6px;
+}
+
+.nav-centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ********************** Header and NavBar ******************** */

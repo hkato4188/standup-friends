@@ -328,7 +328,7 @@ class ToDoLists_By_Id(Resource):
             return make_response({"error": "List not found."},404)
     
     def delete(self, id):
-        list = ToDoList.query.filter(Response.id == id).first()
+        list = ToDoList.query.filter(ToDoList.id == id).first()
         if list:
             db.session.delete(list)
             db.session.commit()

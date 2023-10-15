@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 
 import "../css/styles.css";
 
-function ToDoList({ tdlist }) {
+function ToDoList({ ...props }) {
+  const { tdlist, onDelete } = props;
   const { id, description, items, users } = tdlist;
 
   const list_owners = users.map((u) => {
@@ -27,8 +28,9 @@ function ToDoList({ tdlist }) {
         })}
       </ul>
       <button>
-        <Link to={`/todo_lists/${id}`}>Get to work!</Link>
+        <Link to={`/todolists/${id}`}>Get to work!</Link>
       </button>
+      <button onClick={() => onDelete(id)}>Delete</button>
     </div>
   );
 }
