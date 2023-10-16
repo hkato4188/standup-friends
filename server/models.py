@@ -44,7 +44,7 @@ class User(db.Model, SerializerMixin):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
         # ✅ Add a column _password_hash
     _password_hash = db.Column( db.String, nullable = False )
-    serialize_rules = ("-groups.members", "-responses.user", "-todo_lists.users", "-discussion_responses.submitter")
+    serialize_rules = ("-groups.members", "-responses.user", "-todo_lists.users", "-discussion_responses.submitter", "-_password_hash")
     
     # ✅ Create a hybrid_property that will protect the hash from being viewed
     @hybrid_property
@@ -64,7 +64,6 @@ class User(db.Model, SerializerMixin):
 
     # ✅ Create an authenticate method that uses bcyrpt to verify the password against the hash in the DB with bcrypt.check_password_hash 
     def authenticate ( self, password ) :
-        from app import bcrypt
         return bcrypt.check_password_hash( self._password_hash, password.encode( 'utf-8' ) )
 
     def __repr__(self):

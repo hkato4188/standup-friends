@@ -31,7 +31,7 @@ def create_users():
         u = User(
             name=name,
             email=fake.email(),
-            _password_hash="abcd1234"
+            password_hash="millythecat1",
         )
         users.append(u)
     return users
