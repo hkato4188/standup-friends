@@ -1,8 +1,8 @@
 """create db
 
-Revision ID: 82bbd570b45e
+Revision ID: d693f24667d5
 Revises: 
-Create Date: 2023-10-15 16:36:13.631240
+Create Date: 2023-10-16 15:10:57.749417
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '82bbd570b45e'
+revision = 'd693f24667d5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +36,14 @@ def upgrade():
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('sessions',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('session_id', sa.String(length=255), nullable=True),
+    sa.Column('data', sa.LargeBinary(), nullable=True),
+    sa.Column('expiry', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('session_id')
     )
     op.create_table('todo_lists',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -122,6 +130,7 @@ def downgrade():
     op.drop_table('discussion_responses')
     op.drop_table('users')
     op.drop_table('todo_lists')
+    op.drop_table('sessions')
     op.drop_table('questions')
     op.drop_table('groups')
     op.drop_table('discussion_topics')

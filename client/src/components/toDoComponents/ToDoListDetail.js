@@ -7,10 +7,9 @@ function ToDoListDetail() {
   const { id } = useParams();
   const [toDos, setToDos] = useState([]);
   const [inputText, setInputText] = useState("");
-  const [stateCounter, setStateCounter] = useState(0);
 
   useEffect(() => {
-    fetch(`http://localhost:5555/todolists/${id}`)
+    fetch(`http://127.0.0.1:5555/todolists/${id}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -21,8 +20,7 @@ function ToDoListDetail() {
       .catch((error) => {
         console.error("Error fetching data: ", error);
       });
-  }, [id, stateCounter]);
-  console.log("re-rendered");
+  }, [id]);
 
   function handleChange(e) {
     const newInput = e.target.value;
@@ -32,14 +30,14 @@ function ToDoListDetail() {
   function addItem(e) {
     e.preventDefault();
     if (inputText !== "") {
-      fetch(`http://localhost:5555/todos`, {
+      fetch(`http://127.0.0.1:5555/todos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           description: inputText,
-          list_id: id,
+          list_id: parseInt(id),
         }),
       })
         .then((r) => r.json())
@@ -51,7 +49,7 @@ function ToDoListDetail() {
   }
 
   function deleteItem(id) {
-    fetch(`http://localhost:5555/todos/${id}`, {
+    fetch(`http://127.0.0.1:5555/todos/${id}`, {
       method: "DELETE",
     });
     let updatedToDoData = toDos.filter((todo) => {
@@ -67,19 +65,17 @@ function ToDoListDetail() {
       } else {
         return {
           ...td,
-          completed: !status,
+          completed: status,
         };
       }
     });
-    console.log(status);
-
     setToDos(result);
   }
 
   function editItem(id, status) {
     let tdCompletedPatch = !status;
 
-    fetch(`http://localhost:5555/todos/${id}`, {
+    fetch(`http://127.0.0.1:5555/todos/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -88,10 +84,8 @@ function ToDoListDetail() {
         completed: tdCompletedPatch,
       }),
     }).then(() => {
-      setStateCounter((stateCounter) => stateCounter + 1);
+      updateCompleteStatus(id, tdCompletedPatch);
     });
-
-    // updateCompleteStatus(id, tdCompletedPatch);
   }
 
   const toDoItemArray = toDos.map((td) => {

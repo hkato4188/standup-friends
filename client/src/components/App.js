@@ -14,10 +14,12 @@ function App() {
 
   const fetchUser = () => {
     // 8.✅ Create a GET fetch that goes to '/auto_login'
-    console.log("checking user");
-    fetch("http://localhost:5555/auto_login").then((r) => {
-      if (r.status === 200) {
+
+    fetch("http://127.0.0.1:5555/auto_login").then((r) => {
+      if (r.statusText !== "NO CONTENT") {
         r.json().then(setUser);
+      } else {
+        console.log("no user logged in");
       }
     });
   };
@@ -51,7 +53,7 @@ function App() {
         <Route exact path="/discussionquestions">
           <DiscussionQuestions />
         </Route>
-        <Route exact path="/about">
+        <Route exact path="/">
           <About />
         </Route>
       </Switch>

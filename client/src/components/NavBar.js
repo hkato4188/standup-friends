@@ -5,10 +5,10 @@ import { NavLink, Link } from "react-router-dom";
 //Route conditionally renders a component when the URL matches the pattern given
 
 function NavBar({ updateUser, user }) {
-  const handleLogout = () => {
-    updateUser(null);
-    fetch("http://localhost:5555/logout", { method: "DELETE" });
-  };
+  function handleLogout() {
+    //   updateUser(null);
+    //   fetch("http://127.0.0.1:5555/logout", { method: "DELETE" });
+  }
 
   return (
     <div className="nav-container">
@@ -59,15 +59,14 @@ function NavBar({ updateUser, user }) {
         </NavLink>
       ) : null}
       {user ? (
-        <NavLink
+        <a
           activeStyle={{ backgroundColor: "#7895CB" }}
           className="nav-btn nav-text"
-          exact
-          to="/logout"
+          href="/logout"
           onClick={handleLogout}
         >
           Logout
-        </NavLink>
+        </a>
       ) : null}
     </div>
   );

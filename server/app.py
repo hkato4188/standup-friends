@@ -15,7 +15,8 @@ from models import *
 
 @app.route('/')
 def index():
-    return '<h1>Project Server</h1>'
+    session["test"] = "cookieswork"
+    return '<h1>Project Server with Princeton</h1>'
 
 # 1.✅ Create a Signup route
 class Signup ( Resource ) :
@@ -38,6 +39,7 @@ class Signup ( Resource ) :
             db.session.commit()
 
             #1.2.5 Add the user id to session under the key of user_id
+            print("the user has been saved!")
             session[ 'user_id' ] = new_user.id
 
             #1.2.6 send the new user back to the client with a status of 201
@@ -65,6 +67,7 @@ class Login ( Resource ) :
         if user and user.authenticate( password ) :
             
             session[ 'user_id' ] = user.id
+            session['additional_key'] = "new_value"
             session.modified = True
             print(session)
             print("hk and tw test:")
@@ -105,12 +108,12 @@ api.add_resource( AutoLogin, '/auto_login' )
     # 6.2 Create a method called delete
     # 6.3 Clear the user id in session by setting the key to None
     # 6.4 create a 204 no content response to send back to the client
-# class Logout ( Resource ) :
-#     def delete ( self ) :
-#         session[ 'user_id' ] = None
-#         return {}, 204
+class Logout ( Resource ) :
+    def delete ( self ) :
+        session[ 'user_id' ] = None
+        return {}, 204
     
-# api.add_resource( Logout, '/logout' )
+api.add_resource( Logout, '/logout' )
 
 # 7.✅ Navigate to client/src/components/Navigation.js to build the logout button!
 
@@ -444,7 +447,7 @@ class ToDos(Resource):
     
     def post(self):
         data = request.get_json()
-        new_td = ToDo(description=data["description"], completed="False", list_id=data["list_id"])
+        new_td = ToDo(description=data["description"], completed=False, list_id=data["list_id"])
         print(f"new td {new_td.completed}")
         if new_td.validation_errors:
                 errors = new_td.validation_errors

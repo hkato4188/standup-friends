@@ -5,7 +5,7 @@ function GroupsPage() {
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5555/groups")
+    fetch("http://127.0.0.1:5555/groups")
       .then((response) => response.json())
       .then((data) => setGroups(data));
   }, []);
