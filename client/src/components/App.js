@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
 // import ErrorPage from "./ErrorPage";
 import GroupsPage from "./groupComponents/GroupsPage";
@@ -6,12 +6,39 @@ import ToDosPage from "./toDoComponents/ToDosPage";
 import ToDoListDetail from "./toDoComponents/ToDoListDetail";
 import Header from "./Header";
 import NavBar from "./NavBar";
+import Login from "./Login";
+import DiscussionQuestions from "./DiscussionQuestions";
+import About from "./About";
 function App() {
+  const [user, setUser] = useState(null);
+
+  const fetchUser = () => {
+    // 8.✅ Create a GET fetch that goes to '/auto_login'
+    console.log("checking user");
+    fetch("http://localhost:5555/auto_login").then((r) => {
+      if (r.status === 200) {
+        r.json().then(setUser);
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+  const updateUser = (user) => setUser(user);
+
+  // 9.✅ Return a second block of JSX
+  // If the user is not in state return JSX and include <GlobalStyle /> <Navigation/> and  <Authentication updateUser={updateUser}/>
+
   return (
     <>
       <Header />
-      <NavBar />
+      {user ? <h4>Welcome {user.name}</h4> : null}
+      <NavBar updateUser={updateUser} user={user} />
       <Switch>
+        <Route exact path="/login">
+          <Login updateUser={updateUser} />
+        </Route>
         <Route exact path="/groups">
           <GroupsPage />
         </Route>
@@ -20,6 +47,12 @@ function App() {
         </Route>
         <Route exact path="/todolists/:id">
           <ToDoListDetail />
+        </Route>
+        <Route exact path="/discussionquestions">
+          <DiscussionQuestions />
+        </Route>
+        <Route exact path="/about">
+          <About />
         </Route>
       </Switch>
     </>

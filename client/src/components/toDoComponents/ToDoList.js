@@ -9,10 +9,10 @@ function ToDoList({ ...props }) {
 
   const list_owners = users.map((u) => {
     return (
-      <>
+      <React.Fragment key={u.id}>
         {u.name} | {u.email}
         <br></br>
-      </>
+      </React.Fragment>
     );
   });
 
@@ -20,11 +20,11 @@ function ToDoList({ ...props }) {
     <div className="group-card outline">
       <h1>Description: {description}</h1>
       <h3>Owners:</h3>
-      <p>{list_owners}</p>
+      <div>{list_owners}</div>
       <h4>No. of items: {items.length}</h4>
       <ul>
         {items.map((td) => {
-          return <div>🗒️ {td.description.substring(0, 40)} ...</div>;
+          return <li key={td.id}>🗒️ {td.description.substring(0, 40)} ...</li>;
         })}
       </ul>
       <button>

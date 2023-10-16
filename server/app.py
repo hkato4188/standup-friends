@@ -3,11 +3,10 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, make_response, session
-from flask_restful import Resource
+
 
 # Local imports
-from config import app, db, api, NotFound, Unauthorized
+from config import app, db, api, request, session, Resource
 # Add your model imports
 from models import *
 
@@ -43,8 +42,9 @@ class Signup ( Resource ) :
 
             #1.2.6 send the new user back to the client with a status of 201
             return new_user.to_dict(), 201
-        except Exception as e:
-            return {"error": f"{e}"}, 422
+        # except Exception as e:
+        except:
+            return {"error": "{Error signing up}"}, 422
         
     #1.3 Test out your route with the client
 
@@ -61,11 +61,18 @@ class Login ( Resource ) :
         password = request.get_json()[ 'password' ]
 
         user = User.query.filter( User.name.like( f'{ name }' ) ).first() or User.query.filter( User.email.like( f'{ email }' ) ).first()
-
+        
         if user and user.authenticate( password ) :
+            
             session[ 'user_id' ] = user.id
-            # print( session[ 'user_id' ] )
-            return user.to_dict(), 200
+            session.modified = True
+            print(session)
+            print("hk and tw test:")
+            print( session[ 'user_id' ] )
+            response =  user.to_dict(only=("id", "name","email")), 200
+            
+            return response
+            
         else :
             return { 'errors':['Invalid username or password.'] }, 401
 
@@ -80,10 +87,11 @@ api.add_resource( Login, '/login', endpoint = 'login' )
         # 4.2.3 If the user id is in sessions and found make a response to send to the client. else raise the Unauthorized exception
 class AutoLogin ( Resource ) :
     def get ( self ) :
-        if session[ 'user_id' ] :
-            user = User.find_by_id( session[ 'user_id' ] )
+        print(session.get('user_id'))
+        if session.get('user_id') :
+            user = User.query.filter( User.id == session[ 'user_id' ] ).first()
             if user :
-                return user.to_dict(), 200
+                return user.to_dict(only=("id", "name", "email")), 200
             else :
                 return { 'errors': ['User not found.'] }, 404
         else :
@@ -97,12 +105,12 @@ api.add_resource( AutoLogin, '/auto_login' )
     # 6.2 Create a method called delete
     # 6.3 Clear the user id in session by setting the key to None
     # 6.4 create a 204 no content response to send back to the client
-class Logout ( Resource ) :
-    def delete ( self ) :
-        session[ 'user_id' ] = None
-        return {}, 204
+# class Logout ( Resource ) :
+#     def delete ( self ) :
+#         session[ 'user_id' ] = None
+#         return {}, 204
     
-api.add_resource( Logout, '/logout' )
+# api.add_resource( Logout, '/logout' )
 
 # 7.✅ Navigate to client/src/components/Navigation.js to build the logout button!
 
@@ -113,7 +121,7 @@ class Groups(Resource):
     def get(self):
         groups = Group.query.all()
         groups_dict = [group.to_dict(only=("id","name","meetings.id","meetings.topic","members.id","members.name")) for group in groups]
-        return make_response(groups_dict, 200)
+        return  groups_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -125,20 +133,20 @@ class Groups(Resource):
                 db.session.add(new_group)
                 db.session.commit()
                 group_dict = new_group.to_dict()
-                return make_response(group_dict, 201)
+                return  group_dict, 201
         except:
             errors = new_group.validation_errors
             new_group.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class Groups_By_Id(Resource):
     def get(self,id):
         group = Group.query.filter(Group.id == id).first()
         if group:
             group_dict = group.to_dict()
-            return make_response(group_dict, 200)
+            return  group_dict, 200
         else:
-            return make_response({"error": "Group not found."},404)
+            return  {"error": "Group not found."},404
 
     def patch(self,id):
         group = Group.query.filter(Group.id == id).first()
@@ -154,29 +162,29 @@ class Groups_By_Id(Resource):
                 db.session.add(group)
                 db.session.commit()
                 group_dict = group.to_dict()
-                return make_response(group_dict, 202)
+                return  group_dict, 202
             except:
                 errors = group.validation_errors
                 group.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "Group not found."},404)
+            return  {"error": "Group not found."},404
     
     def delete(self, id):
         group = Group.query.filter(Group.id == id).first()
         if group:
             db.session.delete(group)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "Group not found"}, 404)
+            return  {"error": "Group not found"}, 404
 
 
 class Meetings(Resource):
     def get(self):
         meetings = Meeting.query.all()
         meetings_dict = [meeting.to_dict() for meeting in meetings]
-        return make_response(meetings_dict, 200)
+        return  meetings_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -189,20 +197,20 @@ class Meetings(Resource):
             db.session.add(new_meeting)
             db.session.commit()
             meeting_dict = new_meeting.to_dict()
-            return make_response(meeting_dict, 201)
+            return  meeting_dict, 201
         except:
             errors = new_meeting.validation_errors
             new_meeting.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class Meetings_By_Id(Resource):
     def get(self,id):
         meeting = Meeting.query.filter(Meeting.id == id).first()
         if meeting:
             meeting_dict = meeting.to_dict()
-            return make_response(meeting_dict, 200)
+            return  meeting_dict, 200
         else:
-            return make_response({"error": "Meeting not found."},404)
+            return  {"error": "Meeting not found."},404
 
     def patch(self,id):
         meeting = Meeting.query.filter(Meeting.id == id).first()
@@ -218,29 +226,29 @@ class Meetings_By_Id(Resource):
                 db.session.add(meeting)
                 db.session.commit()
                 meeting_dict = meeting.to_dict()
-                return make_response(meeting_dict, 202)
+                return  meeting_dict, 202
             except:
                 errors = meeting.validation_errors
                 meeting.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "Meeting not found."},404)
+            return  {"error": "Meeting not found."},404
     
     def delete(self, id):
         meeting = Meeting.query.filter(Meeting.id == id).first()
         if meeting:
             db.session.delete(meeting)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "Meeting not found"}, 404)
+            return  {"error": "Meeting not found"}, 404
 
 
 class Questions(Resource):
     def get(self):
         questions = Question.query.all()
         questions_dict = [question.to_dict() for question in questions]
-        return make_response(questions_dict, 200)
+        return  questions_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -253,20 +261,20 @@ class Questions(Resource):
             db.session.add(new_question)
             db.session.commit()
             question_dict = new_question.to_dict()
-            return make_response(question_dict, 201)
+            return  question_dict, 201
         except:
             errors = new_question.validation_errors
             new_question.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class Questions_By_Id(Resource):
     def get(self, id):
         question = Question.query.filter(Question.id == id).first()
         if question:
             question_dict = question.to_dict()
-            return make_response(question_dict, 200)
+            return  question_dict, 200
         else:
-            return make_response({"error": "Question not found."},404)
+            return  {"error": "Question not found."},404
 
     def patch(self,id):
         question = Question.query.filter(Question.id == id).first()
@@ -282,29 +290,29 @@ class Questions_By_Id(Resource):
                 db.session.add(question)
                 db.session.commit()
                 question_dict = question.to_dict()
-                return make_response(question_dict, 202)
+                return  question_dict, 202
             except:
                 errors = question.validation_errors
                 question.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "Question not found."},404)
+            return  {"error": "Question not found."},404
     
     def delete(self, id):
         question = Question.query.filter(Question.id == id).first()
         if question:
             db.session.delete(question)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "Question not found"}, 404)
+            return  {"error": "Question not found"}, 404
 
 
 class Responses(Resource):
     def get(self):
         responses = Response.query.all()
         responses_dict = [response.to_dict() for response in responses]
-        return make_response(responses_dict, 200)
+        return  responses_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -317,20 +325,20 @@ class Responses(Resource):
             db.session.add(new_response)
             db.session.commit()
             response_dict = new_response.to_dict()
-            return make_response(response_dict, 201)
+            return  response_dict, 201
         except:
             errors = new_response.validation_errors
             new_response.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class Responses_By_Id(Resource):
     def get(self, id):
         response = Response.query.filter(Response.id == id).first()
         if response:
             response_dict = response.to_dict()
-            return make_response(response_dict, 200)
+            return  response_dict, 200
         else:
-            return make_response({"error": "Response not found."},404)
+            return  {"error": "Response not found."},404
 
     def patch(self,id):
         response = Response.query.filter(Response.id == id).first()
@@ -346,28 +354,29 @@ class Responses_By_Id(Resource):
                 db.session.add(response)
                 db.session.commit()
                 response_dict = response.to_dict()
-                return make_response(response_dict, 202)
+                return  response_dict, 202
             except:
                 errors = response.validation_errors
                 response.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "Response not found."},404)
+            return  {"error": "Response not found."},404
     
     def delete(self, id):
         response = Response.query.filter(Response.id == id).first()
         if response:
             db.session.delete(response)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "Response not found"}, 404)
+            return  {"error": "Response not found"}, 404
 
 class ToDoLists(Resource):
     def get(self):
+        
         tdlists = ToDoList.query.all()
         lists_dict = [list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "items")) for list in tdlists]
-        return make_response(lists_dict, 200)
+        return  lists_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -380,11 +389,11 @@ class ToDoLists(Resource):
             db.session.add(new_list)
             db.session.commit()
             list_dict = new_list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "items"))
-            return make_response(list_dict, 201)
+            return  list_dict, 201
         except:
             errors = new_list.validation_errors
             new_list.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class ToDoLists_By_Id(Resource):
     def get(self, id):
@@ -392,9 +401,9 @@ class ToDoLists_By_Id(Resource):
         
         if tdl:
             td_dict = [todo.to_dict(only=("id","description","completed","todo_list")) for todo in tdl]
-            return make_response(td_dict, 200)
+            return  td_dict, 200
         else:
-            return make_response({"error": "List not found."},404)
+            return  {"error": "List not found."},404
 
     def patch(self,id):
         list = ToDoList.query.filter(ToDoList.id == id).first()
@@ -410,28 +419,28 @@ class ToDoLists_By_Id(Resource):
                 db.session.add(list)
                 db.session.commit()
                 list_dict = list.to_dict()
-                return make_response(list_dict, 202)
+                return  list_dict, 202
             except:
                 errors = list.validation_errors
                 list.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "List not found."},404)
+            return  {"error": "List not found."},404
     
     def delete(self, id):
         list = ToDoList.query.filter(ToDoList.id == id).first()
         if list:
             db.session.delete(list)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "List not found"}, 404)
+            return  {"error": "List not found"}, 404
 
 class ToDos(Resource):
     def get(self):
         tds = ToDo.query.all()
         td_dict = [td.to_dict(only=("id","description","completed","todo_list")) for td in tds]
-        return make_response(td_dict, 200)
+        return  td_dict, 200
     
     def post(self):
         data = request.get_json()
@@ -445,20 +454,20 @@ class ToDos(Resource):
             db.session.add(new_td)
             db.session.commit()
             todo_dict = new_td.to_dict(only=("id","description","completed","todo_list"))
-            return make_response(todo_dict, 201)
+            return  todo_dict, 201
         except:
             errors = new_td.validation_errors
             new_td.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class ToDos_By_Id(Resource):
     def get(self, id):
         td = ToDo.query.filter(ToDo.id == id).first()
         if td:
             td_dict = td.to_dict()
-            return make_response(td_dict, 200)
+            return  td_dict, 200
         else:
-            return make_response({"error": " not found."},404)
+            return  {"error": " not found."},404
 
     def patch(self,id):
         td = ToDo.query.filter(ToDo.id == id).first()
@@ -474,28 +483,28 @@ class ToDos_By_Id(Resource):
                 db.session.add(td)
                 db.session.commit()
                 td_dict = td.to_dict()
-                return make_response(td_dict, 202)
+                return  td_dict, 202
             except:
                 errors = td.validation_errors
                 td.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": " not found."},404)
+            return  {"error": " not found."},404
     
     def delete(self, id):
         td = ToDo.query.filter(ToDo.id == id).first()
         if td:
             db.session.delete(td)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "ToDo item not found"}, 404)
+            return  {"error": "ToDo item not found"}, 404
 
 class DiscussionTopics(Resource):
     def get(self):
         dts = DiscussionTopic.query.all()
         dt_dict = [dt.to_dict() for dt in dts]
-        return make_response(dt_dict, 200)
+        return  dt_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -508,20 +517,20 @@ class DiscussionTopics(Resource):
             db.session.add(new_dt)
             db.session.commit()
             discussion_topic_dict = new_dt.to_dict()
-            return make_response(discussion_topic_dict, 201)
+            return  discussion_topic_dict, 201
         except:
             errors = new_dt.validation_errors
             new_dt.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class DiscussionTopics_By_Id(Resource):
     def get(self, id):
         dt = DiscussionTopic.query.filter(DiscussionTopic.id == id).first()
         if dt:
             dt_dict = dt.to_dict()
-            return make_response(dt_dict, 200)
+            return  dt_dict, 200
         else:
-            return make_response({"error": "Discussion topic not found."},404)
+            return  {"error": "Discussion topic not found."},404
 
     def patch(self,id):
         dt = DiscussionTopic.query.filter(DiscussionTopic.id == id).first()
@@ -537,28 +546,28 @@ class DiscussionTopics_By_Id(Resource):
                 db.session.add(dt)
                 db.session.commit()
                 dt_dict = dt.to_dict()
-                return make_response(dt_dict, 202)
+                return  dt_dict, 202
             except:
                 errors = dt.validation_errors
                 dt.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "Discussion topic not found."},404)
+            return  {"error": "Discussion topic not found."},404
     
     def delete(self, id):
         dt = DiscussionTopic.query.filter(DiscussionTopic.id == id).first()
         if dt:
             db.session.delete(dt)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "Discussion topic item not found"}, 404)
+            return  {"error": "Discussion topic item not found"}, 404
 
 class DiscussionResponses(Resource):
     def get(self):
         drs = DiscussionTopic.query.all()
         dr_dict = [dr.to_dict() for dr in drs]
-        return make_response(dr_dict, 200)
+        return  dr_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -571,20 +580,20 @@ class DiscussionResponses(Resource):
             db.session.add(new_dr)
             db.session.commit()
             discussion_response_dict = new_dr.to_dict()
-            return make_response(discussion_response_dict, 201)
+            return  discussion_response_dict, 201
         except:
             errors = new_dr.validation_errors
             new_dr.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class DiscussionResponses_By_Id(Resource):
     def get(self, id):
         dr = DiscussionResponse.query.filter(DiscussionResponse.id == id).first()
         if dr:
             dr_dict = dr.to_dict()
-            return make_response(dr_dict, 200)
+            return  dr_dict, 200
         else:
-            return make_response({"error": "Discussion response not found."},404)
+            return  {"error": "Discussion response not found."},404
 
     def patch(self,id):
         dr = DiscussionResponse.query.filter(DiscussionResponse.id == id).first()
@@ -600,22 +609,22 @@ class DiscussionResponses_By_Id(Resource):
                 db.session.add(dr)
                 db.session.commit()
                 dr_dict = dr.to_dict()
-                return make_response(dr_dict, 202)
+                return  dr_dict, 202
             except:
                 errors = dr.validation_errors
                 dr.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "Discussion response not found."},404)
+            return  {"error": "Discussion response not found."},404
     
     def delete(self, id):
         dr = DiscussionResponse.query.filter(DiscussionResponse.id == id).first()
         if dr:
             db.session.delete(dr)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "Discussion response item not found"}, 404)
+            return  {"error": "Discussion response item not found"}, 404
 
 
 
@@ -623,7 +632,7 @@ class Users(Resource):
     def get(self):
         users = User.query.all()
         users_dict = [user.to_dict() for user in users]
-        return make_response(users_dict, 200)
+        return  users_dict, 200
     
     def post(Resource):
         data = request.get_json()
@@ -638,20 +647,20 @@ class Users(Resource):
                 db.session.commit()
                 session['user_id'] = new_user.id
                 user_dict = new_user.to_dict()
-                return make_response(user_dict, 201)
+                return  user_dict, 201
         except:
             errors = new_user.validation_errors
             new_user.clear_validation_errors()
-            return make_response({"errors": errors},422)
+            return  {"errors": errors},422
         
 class Users_By_Id(Resource):
     def get(self,id):
         user = User.query.filter(User.id == id).first()
         if user:
             user_dict = user.to_dict()
-            return make_response(user_dict, 200)
+            return  user_dict, 200
         else:
-            return make_response({"error": "User not found."},404)
+            return  {"error": "User not found."},404
 
     def patch(self,id):
         user = User.query.filter(User.id == id).first()
@@ -667,22 +676,22 @@ class Users_By_Id(Resource):
                 db.session.add(user)
                 db.session.commit()
                 user_dict = user.to_dict()
-                return make_response(user_dict, 202)
+                return  user_dict, 202
             except:
                 errors = user.validation_errors
                 user.clear_validation_errors()
-                return make_response({"error": errors}, 422)
+                return  {"error": errors}, 422
         else:
-            return make_response({"error": "User not found."},404)
+            return  {"error": "User not found."},404
     
     def delete(self, id):
         user = User.query.filter(User.id == id).first()
         if user:
             db.session.delete(user)
             db.session.commit()
-            return make_response({}, 204)
+            return  {}, 204
         else:
-            return make_response({"error": "User not found"}, 404)
+            return  {"error": "User not found"}, 404
 
 
 api.add_resource(Groups, "/groups")

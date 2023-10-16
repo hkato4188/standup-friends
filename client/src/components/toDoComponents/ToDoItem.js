@@ -1,17 +1,29 @@
 import React from "react";
+import "../css/styles.css";
 
 function ToDoItem({ ...props }) {
-  const { todo, onDelete } = props;
+  const { todo, onDelete, onEdit } = props;
   const { completed, description, id } = todo;
 
   return (
     <div>
-      <h4>Task:</h4>
-      <p>{description}</p>
+      <h4>Task: </h4>
 
+      <h4>Complete: {completed}</h4>
+      <h2 className={completed ? "strikethrough" : "null"}>{description}</h2>
       <p>
-        Complete: {completed}
-        <button onClick={() => onDelete(id)}>
+        <button
+          onClick={() => {
+            onEdit(id, completed);
+          }}
+        >
+          <span>✏️</span>
+        </button>
+        <button
+          onClick={() => {
+            onDelete(id);
+          }}
+        >
           <span>🗑️</span>
         </button>
       </p>

@@ -7,6 +7,8 @@ function ToDoListDetail() {
   const { id } = useParams();
   const [toDos, setToDos] = useState([]);
   const [inputText, setInputText] = useState("");
+  const [stateCounter, setStateCounter] = useState(0);
+
   useEffect(() => {
     fetch(`http://localhost:5555/todolists/${id}`)
       .then((response) => {
@@ -19,7 +21,8 @@ function ToDoListDetail() {
       .catch((error) => {
         console.error("Error fetching data: ", error);
       });
-  }, [id]);
+  }, [id, stateCounter]);
+  console.log("re-rendered");
 
   function handleChange(e) {
     const newInput = e.target.value;
@@ -57,8 +60,44 @@ function ToDoListDetail() {
     setToDos(() => [...updatedToDoData]);
   }
 
+  function updateCompleteStatus(id, status) {
+    let result = toDos.map((td) => {
+      if (td.id !== id) {
+        return td;
+      } else {
+        return {
+          ...td,
+          completed: !status,
+        };
+      }
+    });
+    console.log(status);
+
+    setToDos(result);
+  }
+
+  function editItem(id, status) {
+    let tdCompletedPatch = !status;
+
+    fetch(`http://localhost:5555/todos/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        completed: tdCompletedPatch,
+      }),
+    }).then(() => {
+      setStateCounter((stateCounter) => stateCounter + 1);
+    });
+
+    // updateCompleteStatus(id, tdCompletedPatch);
+  }
+
   const toDoItemArray = toDos.map((td) => {
-    return <ToDoItem key={td.id} todo={td} onDelete={deleteItem} />;
+    return (
+      <ToDoItem key={td.id} todo={td} onDelete={deleteItem} onEdit={editItem} />
+    );
   });
 
   return (

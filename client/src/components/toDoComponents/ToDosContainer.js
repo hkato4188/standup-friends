@@ -12,9 +12,6 @@ function ToDosContainer() {
   }, []);
 
   function deleteList(id) {
-    fetch(`http://localhost:5555/todolists/${id}`, {
-      method: "DELETE",
-    });
     let updatedToDoListData = toDoLists.filter((todoList) => {
       return todoList.id !== id;
     });

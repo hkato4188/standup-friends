@@ -80,4 +80,35 @@
   transform: translate(-50%, -50%);
 }
 
-/* ********************** Header and NavBar ******************** */
+/* ********************** ToDoList and ToDo ******************** */
+
+.strikethrough {
+  text-decoration: line-through;
+}
+
+/* ********************** Form ******************** */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: auto;
+  font-family: Lato;
+  font-size: 30px;
+}
+
+.login-input {
+  height: 2em;
+  border-radius: 10px;
+}
+
+.login-button {
+  background-color: #1c658c;
+  color: white;
+  height: 50px;
+  font-family: Lato;
+  font-size: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 15px;
+}
