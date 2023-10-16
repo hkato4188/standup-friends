@@ -37,7 +37,7 @@ function Login({ updateUser }) {
     // 3.4 There is a button that toggles the component between login and sign up.
     // if signUp is true use the path '/signup' else use '/login' (we will be writing login soon)
     fetch(
-      signUp ? "http://127.0.0.1:5555/signup" : "http://127.0.0.1:5555/login",
+      signUp ? "http://localhost:5555/signup" : "http://localhost:5555/login",
       postRequest
     )
       .then((r) => r.json())
@@ -49,6 +49,9 @@ function Login({ updateUser }) {
           updateUser(userData);
           history.push("/about");
         }
+      })
+      .catch((err) => {
+        console.log("error", err);
       });
   };
   // 3.4 On a successful POST add the user to state (updateUser is passed down from app through props) and redirect to the Home page.

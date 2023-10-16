@@ -90,13 +90,14 @@ class User(db.Model, SerializerMixin):
     @validates("email")
     def validate_email(self, db_column, email):
         all_emails = [user.email for user in User.query.all()]
-        email_regex = re.compile(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+")
+        # email_regex = re.compile(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+")
 
         if email in all_emails:
             self.validation_errors.append("Email address is already registered.")
-        elif not re.fullmatch(email_regex, email):
-            self.validation_errors.append("Please enter a valid email.")
-        elif re.fullmatch(email_regex, email) and not email in all_emails:
+        # elif not re.fullmatch(email_regex, email):
+        #     self.validation_errors.append("Please enter a valid email.")
+        # elif re.fullmatch(email_regex, email) and not email in all_emails:
+        else:
             return email
     
 

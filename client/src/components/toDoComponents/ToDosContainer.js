@@ -6,7 +6,7 @@ function ToDosContainer() {
   const [toDoLists, setToDoLists] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5555/todolists")
+    fetch("http://localhost:5555/todolists")
       .then((response) => response.json())
       .then((data) => setToDoLists(data));
   }, []);

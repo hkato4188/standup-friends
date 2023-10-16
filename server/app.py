@@ -70,7 +70,7 @@ class Login ( Resource ) :
             session['additional_key'] = "new_value"
             session.modified = True
             print(session)
-            print("hk and tw test:")
+            print("hk and Phillip test:")
             print( session[ 'user_id' ] )
             response =  user.to_dict(only=("id", "name","email")), 200
             

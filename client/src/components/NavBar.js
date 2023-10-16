@@ -6,8 +6,8 @@ import { NavLink, Link } from "react-router-dom";
 
 function NavBar({ updateUser, user }) {
   function handleLogout() {
-    //   updateUser(null);
-    //   fetch("http://127.0.0.1:5555/logout", { method: "DELETE" });
+    updateUser(null);
+    fetch("http://localhost:5555/logout", { method: "DELETE" });
   }
 
   return (

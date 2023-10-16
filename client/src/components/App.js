@@ -15,7 +15,7 @@ function App() {
   const fetchUser = () => {
     // 8.✅ Create a GET fetch that goes to '/auto_login'
 
-    fetch("http://127.0.0.1:5555/auto_login").then((r) => {
+    fetch("http://localhost:5555/auto_login").then((r) => {
       if (r.statusText !== "NO CONTENT") {
         r.json().then(setUser);
       } else {

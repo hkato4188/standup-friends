@@ -9,7 +9,7 @@ function ToDoListDetail() {
   const [inputText, setInputText] = useState("");
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5555/todolists/${id}`)
+    fetch(`http://localhost:5555/todolists/${id}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -30,7 +30,7 @@ function ToDoListDetail() {
   function addItem(e) {
     e.preventDefault();
     if (inputText !== "") {
-      fetch(`http://127.0.0.1:5555/todos`, {
+      fetch(`http://localhost:5555/todos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +49,7 @@ function ToDoListDetail() {
   }
 
   function deleteItem(id) {
-    fetch(`http://127.0.0.1:5555/todos/${id}`, {
+    fetch(`http://localhost:5555/todos/${id}`, {
       method: "DELETE",
     });
     let updatedToDoData = toDos.filter((todo) => {
@@ -75,7 +75,7 @@ function ToDoListDetail() {
   function editItem(id, status) {
     let tdCompletedPatch = !status;
 
-    fetch(`http://127.0.0.1:5555/todos/${id}`, {
+    fetch(`http://localhost:5555/todos/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
