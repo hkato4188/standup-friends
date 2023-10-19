@@ -6,28 +6,30 @@ function ToDoItem({ ...props }) {
   const { completed, description, id } = todo;
 
   return (
-    <div>
-      <h4>Task: </h4>
-
-      <h4>Complete: {completed}</h4>
-      <h2 className={completed ? "strikethrough" : "null"}>{description}</h2>
-      <p>
+    <>
+      <div className="inline">
+        <span className="memo">🗒️ 📌 </span>
+        <h2 className={completed ? "strikethrough" : "null"}>{description}</h2>
+      </div>
+      <div>
         <button
+          className="todo-button"
           onClick={() => {
             onEdit(id, completed);
           }}
         >
-          <span>✏️</span>
+          Complete:<span>✏️</span>
         </button>
         <button
+          className="todo-button"
           onClick={() => {
             onDelete(id);
           }}
         >
-          <span>🗑️</span>
+          Delete: <span>🗑️</span>
         </button>
-      </p>
-    </div>
+      </div>
+    </>
   );
 }
 

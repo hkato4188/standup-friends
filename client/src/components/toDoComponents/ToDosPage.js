@@ -1,13 +1,13 @@
 import ToDosContainer from "./ToDosContainer";
-import React, { useState, useEffect } from "react";
+import React from "react";
+import "../css/styles.css";
 
 function ToDosPage() {
-  const [inputText, setInputText] = useState("");
-
   return (
     <div>
-      <h1>Let's get ToDo'in Stuff...</h1>
-
+      <h1 style={{ textAlign: "center" }}>
+        📐📚📋🖌️🗂️📌📘 Things ToDo! 🖍️🗒️📒📏📕📓✏️
+      </h1>
       <ToDosContainer />
     </div>
   );

@@ -6,20 +6,58 @@ function ToDosContainer() {
   const [toDoLists, setToDoLists] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5555/todolists")
+    fetch("/todolists")
       .then((response) => response.json())
       .then((data) => setToDoLists(data));
   }, []);
 
   function deleteList(id) {
+    fetch(`/todolists/${id}`, {
+      method: "DELETE",
+    });
     let updatedToDoListData = toDoLists.filter((todoList) => {
       return todoList.id !== id;
     });
     setToDoLists(() => [...updatedToDoListData]);
   }
 
+  function updateListOwner(lId, uId, list_owner) {
+    // PATCH HERE
+
+    fetch("/edit_list_owner", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: uId,
+        list_id: lId,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        let result = toDoLists.map((tdl) => {
+          if (tdl.id !== lId) {
+            return tdl;
+          } else {
+            let result = tdl.users.filter((o) => o.id !== uId);
+            return {
+              ...data,
+            };
+          }
+        });
+        setToDoLists(result);
+      });
+  }
   const renderedToDoLists = toDoLists.map((tdl) => {
-    return <ToDoList key={tdl.id} tdlist={tdl} onDelete={deleteList} />;
+    return (
+      <ToDoList
+        key={tdl.id}
+        tdlist={tdl}
+        onUpdateOwner={updateListOwner}
+        onDelete={deleteList}
+      />
+    );
   });
 
   return <div className="flex-container">{renderedToDoLists}</div>;

@@ -6,14 +6,71 @@
   flex-wrap: wrap;
 }
 
+.flex-container > * {
+  height: 30rem;
+}
+
+.inline > * {
+  display: inline;
+  margin-right: 5px;
+  font-size: 2em;
+}
+
 .group-card {
   margin: 2%;
   padding: 5em;
 }
 
+.list-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.list-card {
+  margin: 2%;
+  padding: 5em;
+  width: 70%;
+}
+
+.list-card > input {
+  padding: 10px;
+  border: 3px solid #1c6758;
+  border-radius: 5px;
+  font-size: 20px;
+  outline: none;
+  width: 50%;
+}
+
+.list-card > button {
+  padding: 10px 20px;
+  background-color: #1c6758;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
+  width: 10%;
+}
 .outline {
   border: 2px solid #000;
   border-radius: 5px;
+}
+
+.outline-highlight {
+  border: 15px dotted #1c658c;
+  border-radius: 5px;
+}
+
+hr {
+  border-top: 25px double #1c658c;
+  border-bottom: 25px dotted #1c6758;
+  border-radius: 5px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 100%;
 }
 
 /* ********************** Header and NavBar ******************** */
@@ -49,12 +106,13 @@
 }
 
 .nav-btn {
+  font-size: 100%;
   outline: none;
   border: none;
   cursor: pointer;
   display: inline-flexbox;
   flex-direction: row;
-  width: 80px;
+  width: 100px;
   position: relative;
   background: #548ca8;
   padding: 20px 50px;
@@ -88,6 +146,18 @@
 
 /* ********************** Form ******************** */
 
+.login-container {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: auto;
+  font-family: Lato;
+}
+
+.login-header {
+  text-align: center;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -111,4 +181,88 @@
   margin-top: 10px;
   margin-bottom: 10px;
   border-radius: 15px;
+}
+button:hover {
+  background: #398ab9;
+}
+
+.toggle-button {
+  outline: none;
+  border: none;
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+  display: inline-flexbox;
+  flex-direction: row;
+  max-width: 180px;
+  position: relative;
+  background: #035f8d;
+  padding: 15px 15px;
+
+  box-shadow: 0 7px #36cdaf;
+  border-radius: 20px;
+}
+
+.toggle-button:hover {
+  box-shadow: 0 4px #33b89d;
+  top: 2px;
+}
+
+.toggle-button:active {
+  box-shadow: 0 0 #22917b;
+  top: 6px;
+}
+
+/* ********************** Logged user ******************** */
+
+.user-name {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #064420;
+  text-transform: capitalize;
+  margin: 4px, 4px, 0, 4px;
+  padding: 10px;
+  background-color: #e4efe7;
+  border: 2px solid #064420;
+  border-radius: 10px;
+  display: inline-block;
+  font-family: "lato";
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 5px;
+}
+
+.memo {
+  font-size: 25px;
+}
+
+.todo-button {
+  outline: none;
+  border: none;
+  margin: 1em;
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+  display: inline-flexbox;
+  flex-direction: row;
+  max-width: 180px;
+  position: relative;
+  background: #035f8d;
+  padding: 15px 15px;
+
+  box-shadow: 0 7px #36cdaf;
+  border-radius: 20px;
+}
+
+.todo-button:hover {
+  box-shadow: 0 4px #33b89d;
+  top: 2px;
+}
+
+.todo-button:active {
+  box-shadow: 0 0 #22917b;
+  top: 6px;
 }

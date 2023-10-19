@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { UserContext } from "../context/user";
 
 //The NavLink changes the URL
 //Route conditionally renders a component when the URL matches the pattern given
 
-function NavBar({ updateUser, user }) {
+function NavBar() {
+  const { user, updateUser } = useContext(UserContext);
+
   function handleLogout() {
     updateUser(null);
-    fetch("http://localhost:5555/logout", { method: "DELETE" });
+    fetch("/logout", { method: "DELETE" });
   }
 
   return (
@@ -19,6 +22,14 @@ function NavBar({ updateUser, user }) {
         to="/about"
       >
         About
+      </NavLink>
+      <NavLink
+        activeStyle={{ backgroundColor: "#7895CB" }}
+        className="nav-btn nav-text"
+        exact
+        to="/swansonquote"
+      >
+        Swanson Quote
       </NavLink>
       <NavLink
         activeStyle={{ backgroundColor: "#7895CB" }}

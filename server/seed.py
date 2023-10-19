@@ -225,6 +225,8 @@ if __name__ == "__main__":
         
         for tdl in tdlists:
             tdl.users.append(rc([user for user in users]))
+        for tdl in tdlists:
+            tdl.users.append(rc([user for user in users]))
         db.session.commit()
         print("-----------------")
 

@@ -6,17 +6,44 @@
 
 
 # Local imports
-from config import app, db, api, request, session, Resource
+from config import app, db, api, request, session, Resource, make_response
 # Add your model imports
 from models import *
 
 
 # Views go here!
 
-@app.route('/')
-def index():
-    session["test"] = "cookieswork"
-    return '<h1>Project Server with Princeton</h1>'
+class EditListOwner ( Resource ) :
+    def post ( self ) :
+        data = request.get_json()
+        # owner = User(id=data.get('user_id'))
+        # list = ToDoList(id=data.get('list_id'))
+        list_id = data.get('list_id')
+        user_id = data.get('user_id')
+        owner = User.query.filter(User.id == user_id).first()
+        list = ToDoList.query.filter(ToDoList.id == list_id).first()
+        list_owner = owner in list.users
+        
+        try:    
+            
+            if list_owner:
+                list.users.remove(owner)
+                
+                db.session.commit() 
+                updatedList_dict = list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "users.id", "items"))
+                return  updatedList_dict, 200
+            else:
+                list.users.append(owner)
+                
+                db.session.commit()
+                updatedList_dict = list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "users.id", "items"))
+                return  updatedList_dict, 200
+                
+        except Exception as e:
+            print(e)
+            return make_response({"errors": e}, 400)
+
+api.add_resource( EditListOwner, '/edit_list_owner' )
 
 # 1.✅ Create a Signup route
 class Signup ( Resource ) :
@@ -67,7 +94,7 @@ class Login ( Resource ) :
         if user and user.authenticate( password ) :
             
             session[ 'user_id' ] = user.id
-            session['additional_key'] = "new_value"
+            
             session.modified = True
             print(session)
             print("hk and Phillip test:")
@@ -90,7 +117,7 @@ api.add_resource( Login, '/login', endpoint = 'login' )
         # 4.2.3 If the user id is in sessions and found make a response to send to the client. else raise the Unauthorized exception
 class AutoLogin ( Resource ) :
     def get ( self ) :
-        print(session.get('user_id'))
+        
         if session.get('user_id') :
             user = User.query.filter( User.id == session[ 'user_id' ] ).first()
             if user :
@@ -378,7 +405,7 @@ class ToDoLists(Resource):
     def get(self):
         
         tdlists = ToDoList.query.all()
-        lists_dict = [list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "items")) for list in tdlists]
+        lists_dict = [list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "users.id", "items")) for list in tdlists]
         return  lists_dict, 200
     
     def post(Resource):
@@ -442,7 +469,7 @@ class ToDoLists_By_Id(Resource):
 class ToDos(Resource):
     def get(self):
         tds = ToDo.query.all()
-        td_dict = [td.to_dict(only=("id","description","completed","todo_list")) for td in tds]
+        td_dict = [td.to_dict() for td in tds]
         return  td_dict, 200
     
     def post(self):
@@ -456,7 +483,7 @@ class ToDos(Resource):
         try:  
             db.session.add(new_td)
             db.session.commit()
-            todo_dict = new_td.to_dict(only=("id","description","completed","todo_list"))
+            todo_dict = new_td.to_dict()
             return  todo_dict, 201
         except:
             errors = new_td.validation_errors

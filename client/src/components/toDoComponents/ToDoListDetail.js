@@ -9,7 +9,7 @@ function ToDoListDetail() {
   const [inputText, setInputText] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:5555/todolists/${id}`)
+    fetch(`/todolists/${id}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -30,7 +30,7 @@ function ToDoListDetail() {
   function addItem(e) {
     e.preventDefault();
     if (inputText !== "") {
-      fetch(`http://localhost:5555/todos`, {
+      fetch(`/todos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +49,7 @@ function ToDoListDetail() {
   }
 
   function deleteItem(id) {
-    fetch(`http://localhost:5555/todos/${id}`, {
+    fetch(`/todos/${id}`, {
       method: "DELETE",
     });
     let updatedToDoData = toDos.filter((todo) => {
@@ -75,7 +75,7 @@ function ToDoListDetail() {
   function editItem(id, status) {
     let tdCompletedPatch = !status;
 
-    fetch(`http://localhost:5555/todos/${id}`, {
+    fetch(`/todos/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -95,14 +95,15 @@ function ToDoListDetail() {
   });
 
   return (
-    <div className="group-card outline">
-      <h1>Hello</h1>
+    <div className="list-div">
       <hr></hr>
-      {toDoItemArray}
-      <input onChange={handleChange} type="text" value={inputText} />
-      <button onClick={addItem}>
-        <span>Add</span>
-      </button>
+      <div className="list-card">
+        {toDoItemArray}
+        <input onChange={handleChange} type="text" value={inputText} />
+        <button onClick={addItem}>
+          <span>Add</span>
+        </button>
+      </div>
     </div>
   );
 }
