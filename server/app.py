@@ -410,15 +410,12 @@ class ToDoLists(Resource):
     
     def post(Resource):
         data = request.get_json()
-        list_description = data.get('description')
-        new_list = ToDoList(description=list_description)
-        
+        new_list = ToDoList(description=data["description"])
         if new_list.validation_errors:
                 errors = new_list.validation_errors
                 new_list.clear_validation_errors()
                 raise Exception(errors)
         try:  
-        
             db.session.add(new_list)
             db.session.commit()
             list_dict = new_list.to_dict(only=("id", "description", "created_at", "users.name", "users.email", "items"))
@@ -430,7 +427,7 @@ class ToDoLists(Resource):
         
 class ToDoLists_By_Id(Resource):
     def get(self, id):
-        tdl = ToDo.query.filter(ToDo.list_id == id).all() or ToDoList
+        tdl = ToDo.query.filter(ToDo.list_id == id).all()
         
         if tdl:
             td_dict = [todo.to_dict(only=("id","description","completed","todo_list")) for todo in tdl]
@@ -726,30 +723,6 @@ class Users_By_Id(Resource):
         else:
             return  {"error": "User not found"}, 404
 
-class CreateList ( Resource ) :
-    def post(Resource):
-        data = request.get_json()
-        list_description = data.get('description')
-        new_list = ToDoList(description=list_description)
-        uid = data.get('user_id')
-        list_owner = User.query.filter(User.id == uid)
-        if new_list.validation_errors:
-                errors = new_list.validation_errors
-                new_list.clear_validation_errors()
-                raise Exception(errors)
-        try:  
-            new_list.users.append(list_owner)
-            db.session.add(new_list)
-            db.session.commit()
-            list_dict = new_list.to_dict(only=("id", "description", "created_at", "users.name", "users.email"))
-            return  list_dict, 201
-        except:
-            errors = new_list.validation_errors
-            new_list.clear_validation_errors()
-            return  {"errors": errors},422
-       
-
-api.add_resource( CreateList, '/createlist' )
 
 api.add_resource(Groups, "/groups")
 api.add_resource(Groups_By_Id, "/groups/<int:id>")

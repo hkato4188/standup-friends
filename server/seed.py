@@ -211,11 +211,7 @@ if __name__ == "__main__":
         print("-----------------")
         
         print("Seeding user todo lists...")
-        pres = ToDoList(description="Presentation Outline")
-        testu = User.query.first()
-        pres.users.append(testu)
-        db.session.add(pres)
-        db.session.commit()
+        
         tdl = create_todo_lists()
         db.session.add_all(tdl)
         db.session.commit()

@@ -171,8 +171,16 @@ hr {
   font-family: "lato";
 }
 
-.white-space {
-  height: 20%;
+.about-footer {
+  background-color: #1c6758;
+  color: #fff;
+  margin-top: 20%;
+  padding: 10px;
+  font-size: 1rem;
+  font-family: "lato";
+  text-align: center;
+  bottom: 0;
+  width: 100%;
 }
 
 .list-header {

@@ -52,7 +52,7 @@ function ToDosContainer() {
           } else {
             let result = tdl.users.filter((o) => o.id !== uId);
             return {
-              ...data,
+              ...result,
             };
           }
         });
