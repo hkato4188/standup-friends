@@ -35,9 +35,9 @@ function NavBar() {
         activeStyle={{ backgroundColor: "#7895CB" }}
         className="nav-btn nav-text"
         exact
-        to="/discussionquestions"
+        to="/add_todolist"
       >
-        Discussion Questions
+        Add ToDo List
       </NavLink>
       {user ? (
         <NavLink

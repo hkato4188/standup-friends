@@ -21,6 +21,16 @@ function ToDosContainer() {
     setToDoLists(() => [...updatedToDoListData]);
   }
 
+  // function addList(id) {
+  //   fetch(`/todolists/${id}`, {
+  //     method: "DELETE",
+  //   });
+  //   let updatedToDoListData = toDoLists.filter((todoList) => {
+  //     return todoList.id !== id;
+  //   });
+  //   setToDoLists(() => [...updatedToDoListData]);
+  // }
+
   function updateListOwner(lId, uId, list_owner) {
     // PATCH HERE
 

@@ -26,7 +26,7 @@ function ToDoList({ ...props }) {
         list_owner ? "group-card outline-highlight" : "group-card outline"
       }
     >
-      <h1>Description: {description}</h1>
+      <h1>{description}</h1>
       <h3>Owners:</h3>
       <div>{list_owners}</div>
       <h4>No. of items: {items.length}</h4>

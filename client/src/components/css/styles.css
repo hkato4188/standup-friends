@@ -131,6 +131,18 @@ hr {
   top: 6px;
 }
 
+.about-text {
+  font-family: "lato";
+  font-size: 2em;
+  text-align: center;
+}
+
+.about-header {
+  font-family: "lato";
+  font-size: 4em;
+  text-align: center;
+}
+
 .nav-centered {
   position: fixed;
   top: 50%;
@@ -156,6 +168,17 @@ hr {
 
 .login-header {
   text-align: center;
+  font-family: "lato";
+}
+
+.white-space {
+  height: 20%;
+}
+
+.list-header {
+  text-align: center;
+  font-family: "lato";
+  font-size: 1.2em;
 }
 
 .login-form {
@@ -170,6 +193,12 @@ hr {
 .login-input {
   height: 2em;
   border-radius: 10px;
+}
+
+.list-input {
+  height: 3em;
+  border-radius: 10px;
+  width: 100%;
 }
 
 .login-button {

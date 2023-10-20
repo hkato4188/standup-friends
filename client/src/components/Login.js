@@ -44,7 +44,7 @@ function Login() {
         } else {
           setErrors(null);
           updateUser(userData);
-          history.push("/about");
+          history.push("/");
         }
       })
       .catch((err) => {

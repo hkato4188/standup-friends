@@ -13,6 +13,7 @@ import DiscussionQuestions from "./DiscussionQuestions";
 import { UserContext } from "../context/user";
 import Authenticate from "./Authenticate";
 import SwansonQuote from "./swansonComponents/SwansonQuote";
+import AddToDoList from "./toDoComponents/AddToDoList";
 
 function Main() {
   const { user } = useContext(UserContext);
@@ -34,8 +35,8 @@ function Main() {
         <Route exact path="/todolists/:id">
           <ToDoListDetail />
         </Route>
-        <Route exact path="/discussionquestions">
-          <DiscussionQuestions />
+        <Route exact path="/add_todolist">
+          <AddToDoList />
         </Route>
         <Route exact path="/">
           <About />
