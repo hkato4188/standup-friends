@@ -172,7 +172,13 @@ hr {
 }
 
 .white-space {
-  height: 20%;
+  background-color: #1c6758;
+  padding: 10px;
+  height: 5rem;
+  text-align: center;
+  margin-top: 10%;
+  bottom: 0;
+  color: white;
 }
 
 .list-header {
