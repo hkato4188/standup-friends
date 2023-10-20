@@ -19,7 +19,7 @@ function NavBar() {
         activeStyle={{ backgroundColor: "#7895CB" }}
         className="nav-btn nav-text"
         exact
-        to="/about"
+        to="/"
       >
         About
       </NavLink>

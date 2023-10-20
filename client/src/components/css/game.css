@@ -1,0 +1,103 @@
+.top-div {
+  text-align: center;
+  background-color: #1c658c;
+  border-radius: 2%;
+  color: white;
+}
+
+.level-title {
+  font-family: "Press Start 2P", "Lato";
+  font-size: 5rem;
+  margin: 5%;
+  color: #fef2bf;
+}
+
+.game-container {
+  display: block;
+  width: 60%;
+
+  margin: auto;
+}
+
+.btn {
+  margin: 25px;
+  display: inline-block;
+  height: 200px;
+  width: 200px;
+  border: 10px solid black;
+  border-radius: 20%;
+}
+
+.game-over {
+  background-color: red;
+  opacity: 0.8;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.blue {
+  background-color: rgb(0, 94, 255);
+}
+
+.yellow {
+  background-color: #e5ef24;
+}
+
+.pressed {
+  box-shadow: 0 0 20px white;
+  background-color: grey;
+}
+
+.game-button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: block;
+  position: relative;
+  height: 40px;
+  text-align: center;
+  width: 15%;
+  border-radius: 20px;
+  background: #fff;
+  border: 2px solid #1c6758;
+  margin: 0 auto;
+  letter-spacing: 2px;
+  text-shadow: 0;
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0 auto;
+  box-shadow: 0 6px #efa424;
+  -webkit-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+  font-family: "Lato", sans-serif;
+}
+
+.game-button:hover {
+  box-shadow: 0 4px #1c6758;
+
+  top: 2px;
+}
+
+.game-button:active {
+  box-shadow: 0 0 #efa424;
+  top: 6px;
+}
+
+.fadeOut {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  transition: width 0.5s 0.5s, height 0.5s 0.5s, opacity 0.5s;
+}
+.fadeIn {
+  opacity: 1;
+  width: 100px;
+  height: 100px;
+  transition: width 0.5s, height 0.5s, opacity 0.5s 0.5s;
+}

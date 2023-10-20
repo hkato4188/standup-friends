@@ -13,7 +13,9 @@ from models import *
 fake = Faker()
 
 
-
+langs = ["Ruby", "Python", "Java", "JavaScript", "SQL"]
+items=["data structures", "models", "database", "views", "routes", "calls"]
+goal = ["complete", "review", "update", "audit", "approve", "remediate"]
 
 def create_users():
     # u1 = User(email="breellejordyn@gmail.com", name="BreElle Wells")
@@ -61,7 +63,7 @@ def create_standup_questions():
     questions = []
     for _ in range(25):
         sq = Question(
-            description=fake.text(),
+            description=f"Standup: talk about {rc(langs)} {rc(items)} and {rc(goal)}"
         )
         questions.append(sq)
     return questions
@@ -92,9 +94,10 @@ def create_todos():
 
 def create_todo_lists():
     tdl = []
+    
     for n in range(30):
         t = ToDoList(
-            description= f"List {n}:"
+            description= f"{rc(langs)} {rc(goal)} tickets"
         )
         tdl.append(t)
 
@@ -102,9 +105,11 @@ def create_todo_lists():
 
 def create_discussion_topics():
     dq_topics = []
+    
+    
     for n in range(20):
         dq = DiscussionTopic(
-            content=f"What do you think of the number: {n}?",
+            content=f"What do you think of {rc(langs)} {rc(items)}?",
             rating= randint(1,5)
         )
         dq_topics.append(dq)
@@ -114,7 +119,7 @@ def create_discussion_responses():
     dq_responses = []
     for n in range(20):
         dqr = DiscussionResponse(
-            content=f"What do you think of the number: {n}?"
+            content=f"What do you think of {rc(langs)} {rc(items)}?"
             
         )
         dq_responses.append(dqr)
