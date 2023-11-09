@@ -2,8 +2,6 @@ import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { UserContext } from "../context/user";
 
-//The NavLink changes the URL
-//Route conditionally renders a component when the URL matches the pattern given
 
 function NavBar() {
   const { user, updateUser } = useContext(UserContext);

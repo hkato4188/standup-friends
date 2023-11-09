@@ -9,9 +9,9 @@ import About from "./About";
 import GroupsPage from "./groupComponents/GroupsPage";
 import ToDoListDetail from "./toDoComponents/ToDoListDetail";
 import ToDosPage from "./toDoComponents/ToDosPage";
-import DiscussionQuestions from "./DiscussionQuestions";
+
 import { UserContext } from "../context/user";
-import Authenticate from "./Authenticate";
+
 import SwansonQuote from "./swansonComponents/SwansonQuote";
 import AddToDoList from "./toDoComponents/AddToDoList";
 
