@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import ToDoList from "./ToDoList";
+import Search from "../Search";
 import "../css/styles.css";
 
 function ToDosContainer() {
   const [toDoLists, setToDoLists] = useState([]);
-
+  const [searchValue, setSearchValue] = useState("");
   useEffect(() => {
     fetch("/todolists")
       .then((response) => response.json())
       .then((data) => setToDoLists(data));
   }, []);
+
+  function handleSearch(e) {
+    setSearchValue(e.target.value);
+  }
 
   function deleteList(id) {
     fetch(`/todolists/${id}`, {
@@ -32,8 +37,6 @@ function ToDosContainer() {
   // }
 
   function updateListOwner(lId, uId, list_owner) {
-    // PATCH HERE
-
     fetch("/edit_list_owner", {
       method: "POST",
       headers: {
@@ -59,7 +62,13 @@ function ToDosContainer() {
         setToDoLists(result);
       });
   }
-  const renderedToDoLists = toDoLists.map((tdl) => {
+
+  const filteredToDoLists = toDoLists.filter((l) => {
+    return (
+      searchValue === "" || l.description.toLowerCase().includes(searchValue)
+    );
+  });
+  const renderedToDoLists = filteredToDoLists.map((tdl) => {
     return (
       <ToDoList
         key={tdl.id}
@@ -70,7 +79,14 @@ function ToDosContainer() {
     );
   });
 
-  return <div className="flex-container">{renderedToDoLists}</div>;
+  return (
+    <>
+      <div className="search-container">
+        <Search onSearch={handleSearch} />
+      </div>
+      <div className="flex-container">{renderedToDoLists}</div>
+    </>
+  );
 }
 
 export default ToDosContainer;

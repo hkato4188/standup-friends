@@ -13,9 +13,13 @@ from models import *
 fake = Faker()
 
 
-langs = ["Ruby", "Python", "Java", "JavaScript", "SQL"]
-items=["data structures", "models", "database", "views", "routes", "calls"]
-goal = ["complete", "review", "update", "audit", "approve", "remediate"]
+langs = ["Ruby", "Python", "Java", "JavaScript", "SQL", "Docker",
+         "Kubernetes", "Stripe", "Google", "Server", "Dashboard"]
+items = ["data structures", "models", "database", "views",
+         "routes", "calls", "network", "api", "repo", "migration"]
+goal = ["complete", "review", "update", "audit",
+        "approve", "remediate", "overhaul", "implement"]
+
 
 def create_users():
     # u1 = User(email="breellejordyn@gmail.com", name="BreElle Wells")
@@ -42,22 +46,24 @@ def create_users():
 def create_groups():
     groups = []
     for n in range(25):
-       g = Group(
+        g = Group(
             name=f"Group: {n+1}",
         )
-       groups.append(g)
+        groups.append(g)
 
     return groups
+
 
 def create_meetings():
     meetings = []
     for n in range(25):
-       m = Meeting(
+        m = Meeting(
             topic=f"Meeting: {n+1}"
         )
-       meetings.append(m)
+        meetings.append(m)
 
     return meetings
+
 
 def create_standup_questions():
     questions = []
@@ -74,11 +80,12 @@ def create_standup_responses():
     for _ in range(25):
         res_text = fake.texts(nb_texts=1, max_nb_chars=500)[0]
         res = Response(
-            content= res_text
+            content=res_text
         )
         responses.append(res)
 
     return responses
+
 
 def create_todos():
     td = []
@@ -86,45 +93,46 @@ def create_todos():
     for _ in range(75):
         t = ToDo(
             description=fake.text(),
-            completed = rc(status),
+            completed=rc(status),
         )
         td.append(t)
 
     return td
 
+
 def create_todo_lists():
     tdl = []
-    
+
     for n in range(30):
         t = ToDoList(
-            description= f"{rc(langs)} {rc(goal)} tickets"
+            description=f"{rc(langs)} {rc(goal)} tickets"
         )
         tdl.append(t)
 
     return tdl
 
+
 def create_discussion_topics():
     dq_topics = []
-    
-    
+
     for n in range(20):
         dq = DiscussionTopic(
             content=f"What do you think of {rc(langs)} {rc(items)}?",
-            rating= randint(1,5)
+            rating=randint(1, 5)
         )
         dq_topics.append(dq)
     return dq_topics
+
 
 def create_discussion_responses():
     dq_responses = []
     for n in range(20):
         dqr = DiscussionResponse(
             content=f"What do you think of {rc(langs)} {rc(items)}?"
-            
+
         )
         dq_responses.append(dqr)
     return dq_responses
-
 
 
 if __name__ == "__main__":
@@ -138,13 +146,12 @@ if __name__ == "__main__":
 
         print("Starting seed...")
         print("-----------------")
-        
+
         print("Seeding users...")
         users = create_users()
         db.session.add_all(users)
         db.session.commit()
         print("-----------------")
-
 
         print("Seeding groups...")
         groups = create_groups()
@@ -155,7 +162,7 @@ if __name__ == "__main__":
         print("Adding users to groups...")
         users = User.query.all()
         groups = Group.query.all()
-        for n in range(0,15):
+        for n in range(0, 15):
             users[n].groups.append(groups[n])
             print(f"added user:{n} to group:{n}")
         db.session.commit()
@@ -169,7 +176,7 @@ if __name__ == "__main__":
 
         print("Adding meetings to groups...")
         meetings = Meeting.query.all()
-        for n in range(0,25):
+        for n in range(0, 25):
             meetings[n].group = groups[n]
             print(f"added meeting:{n} to group:{n}")
         db.session.commit()
@@ -183,24 +190,23 @@ if __name__ == "__main__":
 
         print("Adding standup questions to meeting agendas...")
         standup_questions = Question.query.all()
-        for n in range(0,25):
+        for n in range(0, 25):
             meetings[n].questions.append(standup_questions[n])
             print(f"added meeting:{n} to meeting:{n}")
         db.session.commit()
         print("-----------------")
-
 
         print("Seeding standup_responses...")
         responses = create_standup_responses()
         db.session.add_all(responses)
         db.session.commit()
         print("-----------------")
-        
 
         print("Adding standup responses to standup questions...")
         for su_response in responses:
             su_response.user_id = rc([user.id for user in users])
-            su_response.question_id = rc([question.id for question in questions])
+            su_response.question_id = rc(
+                [question.id for question in questions])
         db.session.commit()
         print("-----------------")
 
@@ -209,7 +215,7 @@ if __name__ == "__main__":
         db.session.add_all(td)
         db.session.commit()
         print("-----------------")
-        
+
         print("Seeding user todo lists...")
         pres = ToDoList(description="Presentation Outline")
         testu = User.query.first()
@@ -220,7 +226,6 @@ if __name__ == "__main__":
         db.session.add_all(tdl)
         db.session.commit()
         print("-----------------")
-        
 
         print("Adding todo items to their respective lists...")
         tdlists = ToDoList.query.all()
@@ -230,9 +235,8 @@ if __name__ == "__main__":
         db.session.commit()
         print("-----------------")
 
-        
         print("Adding todo lists to users...")
-        
+
         for tdl in tdlists:
             tdl.users.append(rc([user for user in users]))
         for tdl in tdlists:
@@ -251,7 +255,7 @@ if __name__ == "__main__":
         db.session.add_all(dq_res)
         db.session.commit()
         print("-----------------")
-        
+
         print("Adding discussion responses to discussion topics...")
         dq_responses = DiscussionResponse.query.all()
         dq_topics = DiscussionTopic.query.all()
@@ -263,6 +267,3 @@ if __name__ == "__main__":
         print("-----------------")
 
         print("Done seeding!")
-
-
-
