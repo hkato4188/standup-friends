@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
 
-# Standard library imports
 from random import randint, choice as rc
-
-# Remote library imports
 from faker import Faker
-
-# Local imports
 from app import app
 from models import *
 
 fake = Faker()
-
-
 langs = ["Ruby", "Python", "Java", "JavaScript", "SQL", "Docker",
          "Kubernetes", "Stripe", "Google", "Server", "Dashboard"]
 items = ["data structures", "models", "database", "views",
@@ -22,12 +15,7 @@ goal = ["complete", "review", "update", "audit",
 
 
 def create_users():
-    # u1 = User(email="breellejordyn@gmail.com", name="BreElle Wells")
-    # u2 = User(email="hirokikato1@gmail.com", name="Hiro Kato")
-
-    # users = [u1, u2]
     users = []
-
     name_list = []
     for _ in range(50):
         name = fake.name()
@@ -50,7 +38,6 @@ def create_groups():
             name=f"Group: {n+1}",
         )
         groups.append(g)
-
     return groups
 
 

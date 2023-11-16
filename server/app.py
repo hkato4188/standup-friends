@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
-
-# Standard library imports
-
-# Remote library imports
-
-
-# Local imports
 from config import app, db, api, request, session, Resource, make_response
-# Add your model imports
 from models import *
-
-
-# Views go here!
 
 class EditListOwner ( Resource ) :
     def post ( self ) :
